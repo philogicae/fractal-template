@@ -92,7 +92,8 @@ Requirements: **Node.js 24+**, **pnpm 11+**, modern browser.
 ├── AGENTS.md                    # In-repo agent conventions — keep in sync as you modify the project
 ├── SKILL.md                     # REWRITE to describe the new app (see §5) or delete if the app needs no agent surface
 ├── CHECKLIST.md                 # Tickable bootstrap checklist — delete once every box is ticked
-└── DESIGN.md                    # Complete design system reference
+├── DESIGN.md                    # Complete design system reference
+└── vitest.config.js             # Test runner configuration
 ```
 
 **Path aliases** (`tsconfig.json`):
@@ -408,6 +409,7 @@ import { useClickOutside } from "@utils/click-outside";
 - Reach for `memo()` / `useCallback` / `useMemo` only when profiling shows a real re-render cost. Do not wrap zero-prop or stable-prop components in `memo()`.
 - Always select Zustand state with a selector.
 - `next.config.mjs` enables `output: "standalone"`, `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, `optimizeCss`, compression, long-term caching for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set — add one if your app needs it.
+- CI/CD runs on every push (`lint` → `build` → `test`) via `.github/workflows/ci-cd.yml`.
 
 ## Scripts
 
@@ -416,6 +418,7 @@ pnpm dev      # Dev server, Turbopack, 0.0.0.0:3000
 pnpm build    # Production build (Turbopack)
 pnpm start    # Production server
 pnpm lint     # Biome check + auto-fix
+pnpm test     # Vitest run
 pnpm upgrade  # pnpm update && pnpm prune
 pnpm clean    # rimraf .next out node_modules && pnpm install
 pnpm repomix  # Markdown snapshot of the codebase for agents

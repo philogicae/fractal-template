@@ -1,6 +1,6 @@
 # ------------------------------------------------------------
 # Multi-stage build for the Next.js app.
-# Base image: platformatic/node-caged:25-alpine — Node.js with
+# Base image: platformatic/node-caged:26-alpine — Node.js with
 # V8 pointer compression enabled (~50% memory reduction for
 # pointer-heavy workloads). See https://hub.docker.com/r/platformatic/node-caged
 #
@@ -10,8 +10,8 @@
 
 # Base: shared Node + pnpm toolchain. Pin pnpm to match `packageManager`
 # in package.json for reproducible builds.
-FROM platformatic/node-caged:25-alpine AS base
-ENV PNPM_VERSION=11.0.8 \
+FROM platformatic/node-caged:26-alpine AS base
+ENV PNPM_VERSION=11.9.0 \
     NEXT_TELEMETRY_DISABLED=1
 WORKDIR /webapp
 RUN npm install -g pnpm@${PNPM_VERSION}
@@ -28,7 +28,7 @@ COPY . .
 RUN pnpm build
 
 # runner: minimal production image, runs the standalone server
-FROM platformatic/node-caged:25-alpine AS runner
+FROM platformatic/node-caged:26-alpine AS runner
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \

@@ -30,7 +30,7 @@ const nextConfig = {
 
   // Turbopack optimizations (top-level)
   turbopack: {
-    resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
+    resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
   },
 
   // Experimental features for performance

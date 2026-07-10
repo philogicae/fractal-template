@@ -1,5 +1,11 @@
 # Fractal Template
 
+[![Node](https://img.shields.io/badge/node-24%2B-blue)](https://nodejs.org)
+[![pnpm](https://img.shields.io/badge/pnpm-11%2B-blue)](https://pnpm.io)
+[![Actions status](https://github.com/philogicae/fractal-template/actions/workflows/ci-cd.yml/badge.svg?cache-control=no-cache)](https://github.com/philogicae/fractal-template/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/philogicae/fractal-template)
+
 A modern, production-ready Next.js template featuring the latest technologies and best practices.
 
 ## Features
@@ -46,6 +52,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - `pnpm build` — Build for production
 - `pnpm start` — Start production server
 - `pnpm lint` — Run Biome linter and formatter (auto-fix)
+- `pnpm test` — Run Vitest
+- `pnpm test:watch` — Run Vitest in watch mode
+- `pnpm test:ui` — Run Vitest with browser UI
 - `pnpm upgrade` — Update all dependencies
 - `pnpm clean` — Clean build artifacts and reinstall
 - `pnpm repomix` — Generate codebase summary for AI agents (markdown)
@@ -95,8 +104,10 @@ app/
 ├── page.tsx               # Landing page
 ├── error.tsx              # Error boundary
 ├── loading.tsx            # Loading UI
-└── not-found.tsx          # 404 page
+├── not-found.tsx          # 404 page
+└── sitemap.ts             # SEO sitemap generation
 
+vitest.config.js           # Vitest configuration (path aliases, jsdom)
 public/                    # Static assets
 ├── images/
 │   ├── logo.gif
@@ -152,7 +163,7 @@ Visit the [live demo](https://fractal-template.binaryeyelabs.xyz) to see the tem
 
 ### Docker
 
-A multi-stage `Dockerfile` (`base` → `deps` → `builder` → slim `runner`) and `compose.yaml` are included. The `runner` stage serves the Next.js standalone bundle (`node server.js`) as a non-root user with a `HEALTHCHECK`. Base image: [`platformatic/node-caged:25-alpine`](https://hub.docker.com/r/platformatic/node-caged) — Node.js with V8 pointer compression enabled (~50% memory reduction for pointer-heavy workloads).
+A multi-stage `Dockerfile` (`base` → `deps` → `builder` → slim `runner`) and `compose.yaml` are included. The `runner` stage serves the Next.js standalone bundle (`node server.js`) as a non-root user with a `HEALTHCHECK`. Base image: [`platformatic/node-caged:26-alpine`](https://hub.docker.com/r/platformatic/node-caged) — Node.js with V8 pointer compression enabled (~50% memory reduction for pointer-heavy workloads).
 
 ```bash
 docker compose up --build       # Build and run on :3000

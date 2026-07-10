@@ -133,6 +133,7 @@ app/
 ├── loading.tsx           # Loading UI with Skeleton
 ├── not-found.tsx         # 404 page
 └── sitemap.ts            # SEO sitemap generation
+vitest.config.js          # Vitest test runner config (path aliases, jsdom)
 public/                   # Static assets
 ├── images/
 │   ├── logo.gif
@@ -376,6 +377,7 @@ import { useClickOutside } from "@utils/click-outside";
 - Always select Zustand state with a selector (see above).
 - `next.config.mjs` enables `output: "standalone"` (slim Docker images), `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, `optimizeCss`, compression, long-term caching for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set — add one if your app needs it.
 - The `Dockerfile` ships a multi-stage build (`base` → `deps` → `builder` → slim `runner`) that runs `node server.js` from the standalone bundle as a non-root user with a `HEALTHCHECK`.
+- CI/CD runs on every push (`lint` → `build` → `test`) via `.github/workflows/ci-cd.yml`.
 
 ## Scripts
 
@@ -384,6 +386,7 @@ pnpm dev      # Dev server, Turbopack, 0.0.0.0:3000
 pnpm build    # Production build
 pnpm start    # Production server
 pnpm lint     # Biome check + auto-fix
+pnpm test     # Vitest run
 pnpm upgrade  # pnpm update && pnpm prune
 pnpm clean    # rimraf .next out node_modules && pnpm install
 pnpm repomix  # Generate a markdown snapshot of the codebase for agents
