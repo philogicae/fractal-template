@@ -9,11 +9,11 @@ x-logging: &default-logging
 
 services:
   app:
-    container_name: ${DOCKER_CONTAINER_NAME:-fractal-template}
+    container_name: ${DOCKER_PROJECT_NAME:-fractal-template}
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${DOCKER_IMAGE_NAME:-fractal-template}:${DOCKER_IMAGE_TAG:-latest}
+    image: ${DOCKER_PROJECT_NAME:-fractal-template}
     restart: unless-stopped
     ports:
       - "${DOCKER_PORT:-3000}:3000"
