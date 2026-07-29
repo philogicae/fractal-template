@@ -37,6 +37,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["@heroui/react", "@heroui/styles"],
     optimizeCss: true,
+    useTypeScriptCli: true,
   },
 
   compiler: {
