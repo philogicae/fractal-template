@@ -2,7 +2,9 @@
 const nextConfig = {
   // Standalone output produces a minimal production server bundle
   // (~70% smaller Docker images). See Dockerfile `runner` stage.
-  output: "standalone",
+  // Disabled on Vercel: its build pipeline expects .next/next-server.js.nft.json,
+  // which Turbopack + standalone doesn't emit (ENOENT at onBuildComplete).
+  output: process.env.VERCEL ? undefined : "standalone",
   trailingSlash: false,
   reactStrictMode: true,
   poweredByHeader: false,
@@ -32,6 +34,12 @@ const nextConfig = {
   turbopack: {
     resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
   },
+
+  // Next 16.3.1 standalone tracing drops @swc/helpers' esm/ dir, crashing boot
+  // with MODULE_NOT_FOUND for esm/_interop_require_default.js. Keeping it
+  // external forces the full package into the standalone output. Harmless on
+  // earlier 16.x — add before any next bump past 16.3.0.
+  serverExternalPackages: ["@swc/helpers"],
 
   // Experimental features for performance
   experimental: {

@@ -94,6 +94,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }): Promise<React.ReactElement> {
   const { locale, dict } = await getCurrentDictionary()
+  const cfWebAnalyticsToken = process.env.CF_WEB_ANALYTICS_TOKEN
   return (
     <html
       lang={locale}
@@ -110,6 +111,15 @@ export default async function RootLayout({
          * See https://github.com/darkreader/darkreader#how-to-exclude-a-website
          */}
         <meta name="darkreader-lock" />
+        {/* Cloudflare Web Analytics — enabled per instance via CF_WEB_ANALYTICS_TOKEN
+        (omit the var to disable); posts RUM data to /cdn-cgi/rum. */}
+        {cfWebAnalyticsToken && (
+          <script
+            type="module"
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={`{"token": "${cfWebAnalyticsToken}"}`}
+          />
+        )}
       </head>
       <body className="antialiased">
         <Providers locale={locale} dict={dict}>
