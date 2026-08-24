@@ -116,6 +116,55 @@
 - brand: rename nextjs-template → fractal-template across all files
 - site: update URL to fractal-template.binaryeyelabs.xyz
 - footer: add credits link, a11y improvements (sr-only, aria-hidden), cleaner layout
+- Feat: upgrade to Node.js 26, pnpm 11.9, add Vitest testing infra
+
+- Node.js 26 everywhere: Dockerfile, CI, @types/node
+- pnpm 11.9.0 with updated lockfile
+- Add vitest + jsdom, vitest.config.js, CI test job, npm scripts
+- Update all deps: HeroUI 3.2.2, Next 16.2.10, Biome 2.5.3, Tailwind 4.3.2, etc.
+- CI: trigger on all branches, depot runners, actions/checkout@v7, Next.js cache
+- Remove .mdx from resolveExtensions, fix next-env.d.ts path
+- Feat: audit bug fixes, fractal-cloud topbar restyle, and unit test suite
+
+fix:
+
+- useClickOutside: accept panel+trigger element ids so menus close via
+  their own toggle (mousedown-close + click-reopen race); add Escape-to-close
+- Navbar: pass onClick to external nav links so the mobile menu closes on tap
+- landing CTAs: replace button-in-anchor nesting with styled anchors
+- Footer: server-computed year prop (prerender hydration drift); derive
+  author, credits URL and sr-only social labels from siteConfig (+author field)
+- biome: scope md exclusion to root (!\*.md) so app/skill.md/route.ts is
+  formatted and linted again; fix tab indentation and unused params
+
+perf:
+
+- skill.md route: cache rendered HTML via unstable_cache (marked/csso/terser
+  run once per content revision; ~20ms warm)
+- deps: remove unused react-icons; prune redundant @source directive
+
+ui:
+
+- port fractal-cloud topbar: soft sky->cloud->azure navbar wash (100deg),
+  deep-ocean nav text, light-mode logo invert(1), shadow-xl pill;
+  remove dead --color-navbar-\* tokens
+
+test:
+
+- add vitest suite (54 tests / 10 files): i18n registry key-parity across
+  12 locales, nav labelKey contract, locale resolution priority
+  (cookie > Accept-Language > default), useClickOutside dismissal contract,
+  debounce hooks (fake timers), useMediaQuery (matchMedia stub), cn() merge,
+  /api/hello echo + 400, /skill.md content negotiation + version sync
+- add act/createRoot harness (app/test/react.tsx, no testing-library)
+  and server-only stub alias in vitest.config.js
+
+docs/assets:
+
+- sync DESIGN.md (navbar wash + component spec) and AGENTS.md (hook
+  signature, new Tests section)
+- regenerate public/images/screenshot.jpeg (1280x720, no dev overlay)
+- bump biome schema to 2.5.10, version 1.10.0, ignore .playwright-cli/
 
 ### 🐛 Bug Fixes
 
@@ -158,3 +207,13 @@
 - docs: clarify lint command runs `biome check --write app --unsafe` (scoped to app directory)
 - version: bump to 1.5.1
 - chore: add LanguageSwitcher.tsx to SKILL.md component tour
+- Chore: update changelog
+- Chore: bump dependencies and add minimumReleaseAge config
+- Chore: bump dependencies
+- Chore: bump dependencies
+- Chore: add passWithNoTests to vitest config to prevent CI failures when no tests exist
+- Chore: update deps
+- Chore: simplify Docker env vars, use DOCKER_PROJECT_NAME for container and image names
+- Chore: upgrade pnpm to 11.17.0 and bump dependencies
+- Chore: upgrade TypeScript to 7.0.2, jsdom to 30.0.1, and enable useTypeScriptCli experimental flag
+- Chore: upgrade pnpm to 11.22.0, Next.js to 16.3.1, and add Cloudflare Web Analytics support
