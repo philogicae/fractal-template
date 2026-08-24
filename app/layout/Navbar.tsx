@@ -50,7 +50,7 @@ function NavLink({
 
   if (external) {
     return (
-      <a href={href} className={className}>
+      <a href={href} onClick={onClick} className={className}>
         {label}
       </a>
     )
@@ -106,6 +106,7 @@ function MobileMenuButton({
   return (
     <button
       type="button"
+      id="mobile-menu-trigger"
       aria-label={label}
       aria-expanded={open}
       onClick={onToggle}
@@ -178,15 +179,17 @@ export function NavBar(): React.ReactElement {
   }, [pathname])
 
   // Close menu when clicking anywhere on the page, except inside the dropdown itself.
-  useClickOutside(mobileOpen, "mobile-menu-dropdown", () =>
-    setMobileOpen(false)
+  useClickOutside(
+    mobileOpen,
+    ["mobile-menu-dropdown", "mobile-menu-trigger"],
+    () => setMobileOpen(false)
   )
 
   const toggleMobile = useCallback(() => setMobileOpen((v) => !v), [])
   const closeMobile = useCallback(() => setMobileOpen(false), [])
 
   return (
-    <header className="sticky top-3 z-50 mx-3 sm:mx-4 md:mx-6 rounded-lg border border-(--color-border-default) bg-(--color-bg-primary) shadow-lg">
+    <header className="sticky top-3 z-50 mx-3 sm:mx-4 md:mx-6 rounded-lg border border-(--color-border-default) bg-(--color-bg-primary) shadow-(--shadow-xl)">
       <div className="flex items-center justify-between h-(--navbar-height-mobile) sm:h-(--navbar-height) px-3 sm:px-4 md:px-6 w-full">
         <Logo />
 
@@ -207,7 +210,6 @@ export function NavBar(): React.ReactElement {
           />
         </div>
       </div>
-
       {/* Mobile menu dropdown - positioned absolutely to overlay content */}
       {mobileOpen && (
         <nav

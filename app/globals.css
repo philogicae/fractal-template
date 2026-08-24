@@ -2,8 +2,7 @@
 @import "@heroui/styles";
 @custom-variant dark (&:is(.dark *));
 
-/* Exclude CHANGELOG.md from Tailwind scanning to prevent interference */
-@source not "../CHANGELOG.md";
+/* Markdown files (incl. CHANGELOG.md) are excluded from Tailwind scanning */
 @source not "../*.md";
 
 /*
@@ -12,9 +11,9 @@
  *
  * Principles:
  * - Dark Mode: Pitch black (#08090a) canvas + Neon Lime (#a3e635) + Cyan (#06b6d4) accents
- * - Light Mode: Sky White (#f0f9ff) canvas with warm Orange (#ea580c) → Amber (#f59e0b) →
- *   Yellow (#fbbf24) → Sand (#fde68a) → Azure Mist (#bae6fd) navbar gradient,
- *   plus Turquoise (#06b6d4) accents — evoking sunrise over Mediterranean waters
+ * - Light Mode: Sky White (#f0f9ff) canvas; the navbar carries a soft
+ *   sky-to-azure wash (Sky White → Cloud Light → Azure Mist) with
+ *   Deep Ocean (#0c4a6e) text, plus Turquoise (#06b6d4) accents
  * - Typography: Inter Variable with tight tracking
  * - Shapes: 6px radius, compact density
  * - Accents: Paired complementary colors for beautiful gradients
@@ -84,12 +83,6 @@ html.dark {
   --color-azure: #0ea5e9;
   --color-coral-soft: #fda4af;
   --color-sand-warm: #fde68a;
-
-  /* Navbar gradient colors (light mode Mediterranean theme) */
-  --color-navbar-orange: #ea580c;
-  --color-navbar-amber: #f59e0b;
-  --color-navbar-yellow: #fbbf24;
-  --color-navbar-sand: #fde68a;
 
   /* Heading gradient colors (used in .heading-accent-gradient) */
   --color-heading-gradient-start: var(--color-neon-lime);
@@ -325,32 +318,31 @@ main {
   letter-spacing: var(--tracking-heading-lg);
 }
 
-/* Logo halo effect — subtle shadow for white logo in light mode */
+/* Logo GIF is white-on-transparent: leave it untouched on the dark navbar,
+   but in light mode invert the glyph so it reads against the light wash
+   (same deep-ocean contrast as the nav text below). */
 .logo-halo img {
-  filter: drop-shadow(0 0 4px var(--shadow-halo-color, rgba(0, 0, 0, 0.3)));
-}
-
-.dark .logo-halo img {
   filter: none;
 }
 
-/* Navbar in light mode — Mediterranean palette gradient */
+html:not(.dark) .logo-halo img {
+  filter: invert(1);
+}
+
+/* Navbar in light mode - soft sky-to-azure wash matching the white/teal theme */
 html:not(.dark) header {
   background: linear-gradient(
-    90deg,
-    var(--color-navbar-orange) 0%,
-    var(--color-navbar-amber) 25%,
-    var(--color-navbar-yellow) 50%,
-    var(--color-navbar-sand) 75%,
+    100deg,
+    var(--color-sky-white) 0%,
+    var(--color-cloud-light) 45%,
     var(--color-azure-mist) 100%
   );
 }
 
-/* Logo and nav text: white for contrast on the warm gradient */
+/* Logo and nav text: deep ocean for contrast on the light wash */
 html:not(.dark) header > div > a span {
-  color: var(--color-ghost-white);
+  color: var(--color-deep-ocean);
 }
-
 html:not(.dark) header > div > div button,
 html:not(.dark) header > div > div nav a {
   color: var(--color-deep-ocean);

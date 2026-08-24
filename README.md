@@ -16,7 +16,7 @@ A modern, production-ready Next.js template featuring the latest technologies an
 - **Tailwind CSS 4** — Utility-first styling with CSS variables
 - **HeroUI v3** — Beautiful, accessible UI components
 - **Zustand** — Lightweight state management with persistence
-- **Dark Mode** — `next-themes` with `localStorage` persistence, system preference, and FOUC prevention (see [`DESIGN.md`](./DESIGN.md))
+- **Dark Mode** — `next-themes` with `localStorage` persistence, dark by default (light mode one toggle away), and FOUC prevention (see [`DESIGN.md`](./DESIGN.md))
 - **Biome** — Fast linting and code formatting
 - **Mobile-first** — Fully responsive layout
 - **Path Aliases** — Clean per-file imports with `@components/*`, `@config/*`, `@layout/*`, `@stores/*`, `@utils/*`

@@ -11,23 +11,24 @@ import { useDict } from "@i18n/LocaleProvider"
  * Client Component so the footer label can be read from the active
  * dictionary via `useDict()`.
  */
-export function Footer(): React.ReactElement {
+export function Footer({ year }: { year: number }): React.ReactElement {
   const dict = useDict()
-  const year = new Date().getFullYear()
-  const github = siteConfig.social.find((s) => s.label === "GitHub")?.href
-  const x = siteConfig.social.find((s) => s.label === "X")?.href
+  const github = siteConfig.social.find((s) => s.label === "GitHub")
+  const x = siteConfig.social.find((s) => s.label === "X")
 
   return (
     <footer className="relative bg-(--color-bg-primary)/60 backdrop-blur-sm">
       <Container size="full" className="py-1 sm:py-1.5 md:py-2">
         <div className="flex items-center justify-between gap-2 text-[9px] sm:text-[11px] md:text-xs text-(--color-text-muted)">
           <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
-            <span>&copy; {year} BinaryEyeLabs</span>
+            <span>
+              &copy; {year} {siteConfig.author}
+            </span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
             <a
-              href="https://fractal-template.binaryeyelabs.xyz"
+              href={siteConfig.url}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 hover:text-(--color-text-primary) transition-colors"
@@ -52,12 +53,12 @@ export function Footer(): React.ReactElement {
               <span>{dict.footer.credits}</span>
             </a>
             <a
-              href={github ?? "#"}
+              href={github?.href ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-(--color-text-primary) transition-colors p-0.5"
             >
-              <span className="sr-only">GitHub</span>
+              <span className="sr-only">{github?.label ?? "GitHub"}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="11"
@@ -70,12 +71,12 @@ export function Footer(): React.ReactElement {
               </svg>
             </a>
             <a
-              href={x ?? "#"}
+              href={x?.href ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-(--color-text-primary) transition-colors p-0.5"
             >
-              <span className="sr-only">X (Twitter)</span>
+              <span className="sr-only">{x?.label ?? "X"}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="11"

@@ -346,11 +346,11 @@ The template uses Tailwind utilities for radius (`rounded-*`), shadow (`shadow-*
 
 Dark mode:
 
-- Powered by [`next-themes`](https://github.com/pacocoursey/next-themes) via `app/providers.tsx` (`attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`).
+- Powered by [`next-themes`](https://github.com/pacocoursey/next-themes) via `app/providers.tsx` (`attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`, `disableTransitionOnChange`).
 - `ThemeProvider` injects its own pre-hydration script, toggles the `dark` class on `<html>`, and persists the choice to `localStorage` (`theme` key).
 - `ThemeToggle` (`app/components/ThemeToggle.tsx`) reads `resolvedTheme` and calls `setTheme("light"|"dark")`.
 - `html` / `html.dark` background colors in `globals.css` match the first paint so neither mode flashes.
-- Falls back to `prefers-color-scheme` when no preference is stored.
+- Dark is always the default — `prefers-color-scheme` is never consulted; the ThemeToggle choice persists in `localStorage` (`theme` key).
 
 ## Utilities
 
@@ -368,7 +368,7 @@ import { useClickOutside } from "@utils/click-outside";
 - `cn(...)` — class merge with Tailwind conflict resolution.
 - `useMediaQuery("(max-width: 768px)")`, `useBreakpoint("md")` — `sm | md | lg | xl | 2xl`.
 - `useDebounce(value, ms)`, `useDebouncedCallback(fn, ms)`, `useDebounceState(initial, ms)`.
-- `useClickOutside(isOpen, elementId, onClose)` — closes dropdowns/menus when clicking outside the specified element. Used by `LanguageSwitcher` and mobile menu in `Navbar`.
+- `useClickOutside(isOpen, elementIds, onClose)` — dismissal behavior for floating menus: closes on `Escape` or pointer-down outside all listed elements. Pass **both** the panel id and the trigger id (e.g. `["lang-dropdown", "lang-switcher-trigger"]`), otherwise mousedown closes the menu and the click on the trigger re-opens it. Used by `LanguageSwitcher` and the mobile menu in `Navbar`.
 
 ## Performance
 
@@ -378,6 +378,14 @@ import { useClickOutside } from "@utils/click-outside";
 - `next.config.mjs` enables `output: "standalone"` (slim Docker images), `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, `optimizeCss`, compression, long-term caching for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set — add one if your app needs it.
 - The `Dockerfile` ships a multi-stage build (`base` → `deps` → `builder` → slim `runner`) that runs `node server.js` from the standalone bundle as a non-root user with a `HEALTHCHECK`.
 - CI/CD runs on every push (`lint` → `build` → `test`) via `.github/workflows/ci-cd.yml`.
+
+## Tests
+
+- Runner: Vitest (`pnpm test`), jsdom environment, path aliases resolved in `vitest.config.js`. Tests live next to the code as `*.test.ts(x)`.
+- Covered today: i18n registry integrity (key parity across all locale dictionaries, nav `labelKey` contract), server locale-resolution priority (`NEXT_LOCALE` cookie → `Accept-Language` → default), `useClickOutside` dismissal contract (outside/panel/trigger/Escape/unmount), debounce hooks (fake timers), `useMediaQuery` (stubbed `matchMedia`), `cn()` merge behavior, and both route handlers (`/api/hello` echo + 400, `/skill.md` content-negotiation matrix + version sync).
+- React hook tests use the tiny `act`/`createRoot` helpers in `app/test/react.tsx` — no `@testing-library` dependency.
+- `server-only` is aliased to `app/test/stubs/server-only.ts` in `vitest.config.js` (Next aliases it internally; it is not an installable dependency).
+- When adding a utility, hook, or route handler, add a unit test defending its observable contract. Component interactions are verified in the browser, not in unit tests.
 
 ## Scripts
 

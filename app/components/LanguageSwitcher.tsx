@@ -20,7 +20,9 @@ export function LanguageSwitcher(): React.ReactElement {
   const current = localeMeta[locale]
   const [open, setOpen] = useState(false)
 
-  useClickOutside(open, "lang-dropdown", () => setOpen(false))
+  useClickOutside(open, ["lang-dropdown", "lang-switcher-trigger"], () =>
+    setOpen(false)
+  )
 
   const handleSelect = useCallback(
     (loc: Locale) => {
@@ -36,6 +38,7 @@ export function LanguageSwitcher(): React.ReactElement {
     <div className="relative">
       <button
         type="button"
+        id="lang-switcher-trigger"
         disabled={isPending}
         aria-label={`${dict.nav.language}: ${current.native}`}
         aria-expanded={open}

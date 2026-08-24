@@ -1,49 +1,49 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import { unstable_cache } from "next/cache";
-import { marked } from "marked";
-import { minify as minifyJs } from "terser";
-import * as csso from "csso";
-import { version as appVersion } from "../../package.json";
+import { readFile } from "node:fs/promises"
+import { join } from "node:path"
+import * as csso from "csso"
+import { marked } from "marked"
+import { unstable_cache } from "next/cache"
+import { minify as minifyJs } from "terser"
+import { version as appVersion } from "../../package.json"
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-const CACHE_TAG = "skill-md";
-const CACHE_REVALIDATE_SECONDS = 3600; // 1 hour
+const CACHE_TAG = "skill-md"
+const CACHE_REVALIDATE_SECONDS = 3600 // 1 hour
 
 /** Regex to match version in YAML frontmatter */
-const VERSION_REGEX = /^(\s*version:\s*")[^"]*("\s*)$/m;
+const VERSION_REGEX = /^(\s*version:\s*")[^"]*("\s*)$/m
 
 /** Regex to extract frontmatter block (content between --- delimiters) */
-const FRONTMATTER_REGEX = /^---\n([\s\S]*?)\n---\n/;
+const FRONTMATTER_REGEX = /^---\n([\s\S]*?)\n---\n/
 
 /** Browser User-Agent substrings (lowercase for case-insensitive matching) */
 const BROWSER_USER_AGENTS = [
-	"chrome",
-	"safari",
-	"firefox",
-	"edge",
-	"opera",
-	"edg", // Edge without 'e'
-];
+  "chrome",
+  "safari",
+  "firefox",
+  "edge",
+  "opera",
+  "edg", // Edge without 'e'
+]
 
 /** Non-browser tool User-Agent indicators (lowercase) */
 const NON_BROWSER_USER_AGENTS = [
-	"curl",
-	"wget",
-	"httpie",
-	"python-requests",
-	"node",
-	"axios",
-	"postman",
-	"insomnia",
-	"go-http-client",
-	"ruby",
-	"java",
-	"okhttp",
-];
+  "curl",
+  "wget",
+  "httpie",
+  "python-requests",
+  "node",
+  "axios",
+  "postman",
+  "insomnia",
+  "go-http-client",
+  "ruby",
+  "java",
+  "okhttp",
+]
 
 const STYLES = `
 *, *::before, *::after {
@@ -605,7 +605,7 @@ body {
     width: 100%;
     justify-content: flex-start;
   }
-}`;
+}`
 
 // ============================================================================
 // Utilities
@@ -615,31 +615,31 @@ body {
  * Escapes HTML special characters to prevent XSS.
  */
 function escapeHtml(text: string): string {
-	return text
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&#x27;");
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
 }
 
 /**
  * Generates a URL-friendly slug from heading text.
  */
 function generateSlug(text: string): string {
-	return text
-		.toLowerCase()
-		.replace(/[^\w\s-]/g, "")
-		.replace(/\s+/g, "-")
-		.replace(/-+/g, "-")
-		.replace(/^-|-$/g, "");
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
 }
 
 /**
  * Minifies CSS using csso with structural optimization.
  */
 function minifyCss(content: string): string {
-	return csso.minify(content).css;
+  return csso.minify(content).css
 }
 
 /**
@@ -647,22 +647,22 @@ function minifyCss(content: string): string {
  * Mangles variable names and removes dead code for smaller payload.
  */
 async function minifyAndObfuscateJs(content: string): Promise<string> {
-	const result = await minifyJs(content, {
-		mangle: {
-			toplevel: true,
-			properties: false,
-		},
-		compress: {
-			dead_code: true,
-			drop_console: false,
-			drop_debugger: true,
-			unused: true,
-		},
-		format: {
-			comments: false,
-		},
-	});
-	return result.code ?? content;
+  const result = await minifyJs(content, {
+    mangle: {
+      toplevel: true,
+      properties: false,
+    },
+    compress: {
+      dead_code: true,
+      drop_console: false,
+      drop_debugger: true,
+      unused: true,
+    },
+    format: {
+      comments: false,
+    },
+  })
+  return result.code ?? content
 }
 
 /**
@@ -671,130 +671,149 @@ async function minifyAndObfuscateJs(content: string): Promise<string> {
  * It uses placeholder markers that are replaced after HTML escaping.
  */
 function highlightYaml(yaml: string): string {
-	// Use placeholder markers that won't be affected by HTML escaping
-	const KEY_MARKER = '\x00KEY\x00';
-	const PUNC_MARKER = '\x00PUNC\x00';
-	const STR_MARKER = '\x00STR\x00';
-	const NUM_MARKER = '\x00NUM\x00';
-	const LIST_MARKER = '\x00LIST\x00';
-	const COMMENT_MARKER = '\x00COMMENT\x00';
-	const END_MARKER = '\x00END\x00';
+  // Use placeholder markers that won't be affected by HTML escaping
+  const KEY_MARKER = "\x00KEY\x00"
+  const PUNC_MARKER = "\x00PUNC\x00"
+  const STR_MARKER = "\x00STR\x00"
+  const NUM_MARKER = "\x00NUM\x00"
+  const LIST_MARKER = "\x00LIST\x00"
+  const COMMENT_MARKER = "\x00COMMENT\x00"
+  const END_MARKER = "\x00END\x00"
 
-	let highlighted = yaml;
+  let highlighted = yaml
 
-	// First, protect existing HTML entities by temporarily replacing them
-	highlighted = highlighted.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // First, protect existing HTML entities by temporarily replacing them
+  highlighted = highlighted
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
 
-	// Apply highlighting using placeholder markers
-	// Keys (including indented/nested keys in metadata)
-	highlighted = highlighted.replace(
-		/^((?:\s{2})*)([a-zA-Z0-9_-]+)(:)/gm,
-		`$1${KEY_MARKER}$2${END_MARKER}${PUNC_MARKER}$3${END_MARKER}`,
-	);
+  // Apply highlighting using placeholder markers
+  // Keys (including indented/nested keys in metadata)
+  highlighted = highlighted.replace(
+    /^((?:\s{2})*)([a-zA-Z0-9_-]+)(:)/gm,
+    `$1${KEY_MARKER}$2${END_MARKER}${PUNC_MARKER}$3${END_MARKER}`
+  )
 
-	// String values (unquoted or quoted)
-	highlighted = highlighted.replace(
-		/(:\s+)((?:&quot;.*?&quot;)|(?:&#x27;.*?&#x27;)|[^\s#&][^#]*?)(\s*$|\s+#)/gm,
-		`$1${STR_MARKER}$2${END_MARKER}$3`,
-	);
+  // String values (unquoted or quoted)
+  highlighted = highlighted.replace(
+    /(:\s+)((?:&quot;.*?&quot;)|(?:&#x27;.*?&#x27;)|[^\s#&][^#]*?)(\s*$|\s+#)/gm,
+    `$1${STR_MARKER}$2${END_MARKER}$3`
+  )
 
-	// Numbers
-	highlighted = highlighted.replace(
-		/(:\s+)(\d+(?:\.\d+)?)(\s*$|\s+#)/gm,
-		`$1${NUM_MARKER}$2${END_MARKER}$3`,
-	);
+  // Numbers
+  highlighted = highlighted.replace(
+    /(:\s+)(\d+(?:\.\d+)?)(\s*$|\s+#)/gm,
+    `$1${NUM_MARKER}$2${END_MARKER}$3`
+  )
 
-	// List markers
-	highlighted = highlighted.replace(
-		/^(\s*)-(\s)/gm,
-		`$1${LIST_MARKER}-${END_MARKER}$2`,
-	);
+  // List markers
+  highlighted = highlighted.replace(
+    /^(\s*)-(\s)/gm,
+    `$1${LIST_MARKER}-${END_MARKER}$2`
+  )
 
-	// Comments
-	highlighted = highlighted.replace(
-		/^((?:\s|[^\S\r\n])*)(#[^#].*)$/gm,
-		`$1${COMMENT_MARKER}$2${END_MARKER}`,
-	);
+  // Comments
+  highlighted = highlighted.replace(
+    /^((?:\s|[^\S\r\n])*)(#[^#].*)$/gm,
+    `$1${COMMENT_MARKER}$2${END_MARKER}`
+  )
 
-	// URL links
-	highlighted = highlighted.replace(
-		/(https?:\/\/[^\s]+)/g,
-		`${STR_MARKER}$1${END_MARKER}`,
-	);
+  // URL links
+  highlighted = highlighted.replace(
+    /(https?:\/\/[^\s]+)/g,
+    `${STR_MARKER}$1${END_MARKER}`
+  )
 
-	// Now replace placeholders with actual HTML spans
-	highlighted = highlighted
-		.replace(new RegExp(KEY_MARKER, 'g'), '<span class="yaml-key">')
-		.replace(new RegExp(PUNC_MARKER, 'g'), '<span class="yaml-punctuation">')
-		.replace(new RegExp(STR_MARKER, 'g'), '<span class="yaml-string">')
-		.replace(new RegExp(NUM_MARKER, 'g'), '<span class="yaml-number">')
-		.replace(new RegExp(LIST_MARKER, 'g'), '<span class="yaml-list">')
-		.replace(new RegExp(COMMENT_MARKER, 'g'), '<span class="yaml-comment">')
-		.replace(new RegExp(END_MARKER, 'g'), '</span>');
+  // Now replace placeholders with actual HTML spans
+  highlighted = highlighted
+    .replace(new RegExp(KEY_MARKER, "g"), '<span class="yaml-key">')
+    .replace(new RegExp(PUNC_MARKER, "g"), '<span class="yaml-punctuation">')
+    .replace(new RegExp(STR_MARKER, "g"), '<span class="yaml-string">')
+    .replace(new RegExp(NUM_MARKER, "g"), '<span class="yaml-number">')
+    .replace(new RegExp(LIST_MARKER, "g"), '<span class="yaml-list">')
+    .replace(new RegExp(COMMENT_MARKER, "g"), '<span class="yaml-comment">')
+    .replace(new RegExp(END_MARKER, "g"), "</span>")
 
-	return highlighted;
+  return highlighted
 }
 
 /**
  * Cached file reader for SKILL.md.
  */
 const getSkillContent = unstable_cache(
-	async (): Promise<string> =>
-		readFile(join(process.cwd(), "SKILL.md"), "utf-8"),
-	["skill-md-content"],
-	{ revalidate: CACHE_REVALIDATE_SECONDS, tags: [CACHE_TAG] },
-);
+  async (): Promise<string> =>
+    readFile(join(process.cwd(), "SKILL.md"), "utf-8"),
+  ["skill-md-content"],
+  { revalidate: CACHE_REVALIDATE_SECONDS, tags: [CACHE_TAG] }
+)
+
+/**
+ * Cached full-page renderer. Parsing the markdown, minifying the CSS with
+ * csso and mangling the inline JS with terser on every request is wasted
+ * work — the output depends only on the file content, so cache it for the
+ * same TTL and under the same tag as the source read.
+ */
+const getRenderedHtml = unstable_cache(
+  async (content: string): Promise<string> => {
+    const { frontmatter, body, rawFrontmatter } = parseFrontmatter(content)
+    const title = frontmatter.name || "Skill Documentation"
+    return generateHtmlPage(title, body, frontmatter, rawFrontmatter)
+  },
+  ["skill-md-html"],
+  { revalidate: CACHE_REVALIDATE_SECONDS, tags: [CACHE_TAG] }
+)
 
 // ============================================================================
 // Content Parsing
 // ============================================================================
 
 interface ParsedFrontmatter {
-	frontmatter: Record<string, string>;
-	body: string;
-	rawFrontmatter: string;
+  frontmatter: Record<string, string>
+  body: string
+  rawFrontmatter: string
 }
 
 /**
  * Parses YAML frontmatter from markdown content.
  */
 function parseFrontmatter(content: string): ParsedFrontmatter {
-	const match = content.match(FRONTMATTER_REGEX);
+  const match = content.match(FRONTMATTER_REGEX)
 
-	if (!match) {
-		return { frontmatter: {}, body: content, rawFrontmatter: "" };
-	}
+  if (!match) {
+    return { frontmatter: {}, body: content, rawFrontmatter: "" }
+  }
 
-	const rawFrontmatter = match[1] ?? "";
-	const body = content.slice(match[0].length);
-	const frontmatter: Record<string, string> = {};
+  const rawFrontmatter = match[1] ?? ""
+  const body = content.slice(match[0].length)
+  const frontmatter: Record<string, string> = {}
 
-	// Parse only top-level key: value pairs
-	for (const line of rawFrontmatter.split("\n")) {
-		if (!line.trim() || line.trim().startsWith("#") || line.startsWith(" ")) {
-			continue;
-		}
-		const colonIndex = line.indexOf(":");
-		if (colonIndex > 0) {
-			const key = line.slice(0, colonIndex).trim();
-			const value = line
-				.slice(colonIndex + 1)
-				.trim()
-				.replace(/^["']|["']$/g, "");
-			if (key) {
-				frontmatter[key] = value;
-			}
-		}
-	}
+  // Parse only top-level key: value pairs
+  for (const line of rawFrontmatter.split("\n")) {
+    if (!line.trim() || line.trim().startsWith("#") || line.startsWith(" ")) {
+      continue
+    }
+    const colonIndex = line.indexOf(":")
+    if (colonIndex > 0) {
+      const key = line.slice(0, colonIndex).trim()
+      const value = line
+        .slice(colonIndex + 1)
+        .trim()
+        .replace(/^["']|["']$/g, "")
+      if (key) {
+        frontmatter[key] = value
+      }
+    }
+  }
 
-	return { frontmatter, body, rawFrontmatter };
+  return { frontmatter, body, rawFrontmatter }
 }
 
 /**
  * Syncs the version in frontmatter with package.json version.
  */
 function syncVersion(content: string): string {
-	return content.replace(VERSION_REGEX, `$1${appVersion}$2`);
+  return content.replace(VERSION_REGEX, `$1${appVersion}$2`)
 }
 
 // ============================================================================
@@ -805,32 +824,32 @@ function syncVersion(content: string): string {
  * Renders frontmatter as a styled HTML card with syntax highlighting.
  */
 function renderFrontmatterCard(
-	frontmatter: Record<string, string>,
-	rawFrontmatter: string,
+  frontmatter: Record<string, string>,
+  rawFrontmatter: string
 ): string {
-	if (!Object.keys(frontmatter).length) {
-		return "";
-	}
+  if (!Object.keys(frontmatter).length) {
+    return ""
+  }
 
-	const highlightedYaml = highlightYaml(rawFrontmatter);
+  const highlightedYaml = highlightYaml(rawFrontmatter)
 
-	return `
+  return `
     <div class="frontmatter-card">
       <div class="frontmatter-title">Frontmatter</div>
       <pre class="frontmatter-content"><code>${highlightedYaml}</code></pre>
-    </div>`;
+    </div>`
 }
 
 /**
  * Post-processes HTML to add anchor links to headings.
  */
 function addHeadingAnchors(html: string): string {
-	const headingRegex = /<h([1-6])>([^<]*)<\/h[1-6]>/g;
+  const headingRegex = /<h([1-6])>([^<]*)<\/h[1-6]>/g
 
-	return html.replace(headingRegex, (match, level, text) => {
-		const slug = generateSlug(text);
-		return `<h${level} id="${slug}"><a href="#${slug}" class="anchor-link" aria-hidden="true">#</a> ${text}</h${level}>`;
-	});
+  return html.replace(headingRegex, (_match, level, text) => {
+    const slug = generateSlug(text)
+    return `<h${level} id="${slug}"><a href="#${slug}" class="anchor-link" aria-hidden="true">#</a> ${text}</h${level}>`
+  })
 }
 
 /**
@@ -838,37 +857,37 @@ function addHeadingAnchors(html: string): string {
  * Matches shell-style comments (# comment) in code.
  */
 function highlightCodeComments(html: string): string {
-	// Match content inside <code> blocks within <pre>
-	const codeBlockRegex = /<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>/g;
+  // Match content inside <code> blocks within <pre>
+  const codeBlockRegex = /<pre><code([^>]*)>([\s\S]*?)<\/code><\/pre>/g
 
-	return html.replace(codeBlockRegex, (match, langAttr, code) => {
-		// Highlight shell-style comments:
-		// 1. Full-line comments: ^\s*#comment
-		// 2. Inline comments after code: \s+#comment
-		const highlightedCode = code
-			.replace(/^(\s*)(#[^#].*)$/gm, '$1<span class="comment">$2</span>')
-			.replace(/([\s;])(#[^#].*)$/gm, '$1<span class="comment">$2</span>');
+  return html.replace(codeBlockRegex, (_match, langAttr, code) => {
+    // Highlight shell-style comments:
+    // 1. Full-line comments: ^\s*#comment
+    // 2. Inline comments after code: \s+#comment
+    const highlightedCode = code
+      .replace(/^(\s*)(#[^#].*)$/gm, '$1<span class="comment">$2</span>')
+      .replace(/([\s;])(#[^#].*)$/gm, '$1<span class="comment">$2</span>')
 
-		return `<pre><code${langAttr}>${highlightedCode}</code></pre>`;
-	});
+    return `<pre><code${langAttr}>${highlightedCode}</code></pre>`
+  })
 }
 
 /**
  * Generates a complete HTML page with rendered markdown.
  */
 async function generateHtmlPage(
-	title: string,
-	bodyContent: string,
-	frontmatter: Record<string, string>,
-	rawFrontmatter: string,
+  title: string,
+  bodyContent: string,
+  frontmatter: Record<string, string>,
+  rawFrontmatter: string
 ): Promise<string> {
-	const rawHtml = await marked(bodyContent, { gfm: true });
-	const htmlWithAnchors = addHeadingAnchors(rawHtml);
-	const htmlContent = highlightCodeComments(htmlWithAnchors);
-	const frontmatterHtml = renderFrontmatterCard(frontmatter, rawFrontmatter);
+  const rawHtml = await marked(bodyContent, { gfm: true })
+  const htmlWithAnchors = addHeadingAnchors(rawHtml)
+  const htmlContent = highlightCodeComments(htmlWithAnchors)
+  const frontmatterHtml = renderFrontmatterCard(frontmatter, rawFrontmatter)
 
-	// Theme toggle script - will be minified before insertion
-	const themeScript = `
+  // Theme toggle script - will be minified before insertion
+  const themeScript = `
 (function() {
   const toggle = document.getElementById('theme-toggle');
   const moonIcon = document.getElementById('moon-icon');
@@ -920,9 +939,9 @@ async function generateHtmlPage(
       }
     }
   });
-})();`;
+})();`
 
-	return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -977,7 +996,7 @@ async function generateHtmlPage(
   
   <script>${await minifyAndObfuscateJs(themeScript)}</script>
 </body>
-</html>`;
+</html>`
 }
 
 // ============================================================================
@@ -996,26 +1015,30 @@ async function generateHtmlPage(
  * 6. Default → markdown (safe for unknown agents)
  */
 function wantsHtml(request: Request): boolean {
-	const url = new URL(request.url);
-	if (url.searchParams.get("raw") === "1") return false;
+  const url = new URL(request.url)
+  if (url.searchParams.get("raw") === "1") return false
 
-	const accept = request.headers.get("accept") || "";
-	const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
+  const accept = request.headers.get("accept") || ""
+  const userAgent = (request.headers.get("user-agent") || "").toLowerCase()
 
-	// Tools/CLI agents get markdown immediately
-	if (NON_BROWSER_USER_AGENTS.some((ua) => userAgent.includes(ua))) return false;
+  // Tools/CLI agents get markdown immediately
+  if (NON_BROWSER_USER_AGENTS.some((ua) => userAgent.includes(ua))) return false
 
-	// Parse Accept header (strip quality values)
-	const types = accept.split(",").map((t) => t.split(";")[0]?.trim() ?? "");
+  // Parse Accept header (strip quality values)
+  const types = accept.split(",").map((t) => t.split(";")[0]?.trim() ?? "")
 
-	// Explicit content type requests
-	if (types.includes("text/markdown") || types.includes("text/plain") || types.includes("application/json")) {
-		return false;
-	}
-	if (types.includes("text/html")) return true;
+  // Explicit content type requests
+  if (
+    types.includes("text/markdown") ||
+    types.includes("text/plain") ||
+    types.includes("application/json")
+  ) {
+    return false
+  }
+  if (types.includes("text/html")) return true
 
-	// User-Agent as final signal (browser = HTML, unknown = markdown for safety)
-	return BROWSER_USER_AGENTS.some((ua) => userAgent.includes(ua));
+  // User-Agent as final signal (browser = HTML, unknown = markdown for safety)
+  return BROWSER_USER_AGENTS.some((ua) => userAgent.includes(ua))
 }
 
 // ============================================================================
@@ -1041,41 +1064,41 @@ function wantsHtml(request: Request): boolean {
  * - `curl /skill.md?raw=1` → raw markdown (explicit)
  */
 export async function GET(request: Request): Promise<Response> {
-	const shouldReturnHtml = wantsHtml(request);
+  const shouldReturnHtml = wantsHtml(request)
 
-	try {
-		const content = await getSkillContent();
-		const updatedContent = syncVersion(content);
+  try {
+    const content = await getSkillContent()
+    const updatedContent = syncVersion(content)
 
-		// Serve raw markdown for agents and curl
-		if (!shouldReturnHtml) {
-			return new Response(updatedContent, {
-				status: 200,
-				headers: {
-					"Content-Type": "text/markdown; charset=utf-8",
-					"Cache-Control": "public, max-age=3600",
-				},
-			});
-		}
+    // Serve raw markdown for agents and curl
+    if (!shouldReturnHtml) {
+      return new Response(updatedContent, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/markdown; charset=utf-8",
+          "Cache-Control": "public, max-age=3600",
+        },
+      })
+    }
 
-		// Parse and serve styled HTML for browsers
-		const { frontmatter, body, rawFrontmatter } = parseFrontmatter(updatedContent);
-		const title = frontmatter.name || "Skill Documentation";
-		const html = await generateHtmlPage(title, body, frontmatter, rawFrontmatter);
+    // Parse + render once per content revision; marked/csso/terser are
+    // too expensive to rerun on every browser request.
+    const html = await getRenderedHtml(updatedContent)
 
-		return new Response(html, {
-			status: 200,
-			headers: {
-				"Content-Type": "text/html; charset=utf-8",
-				"Cache-Control": "public, max-age=3600",
-			},
-		});
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Failed to read SKILL.md";
+    return new Response(html, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=3600",
+      },
+    })
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to read SKILL.md"
 
-		// Return error in appropriate format based on what user requested
-		if (shouldReturnHtml) {
-			const errorHtml = `<!DOCTYPE html>
+    // Return error in appropriate format based on what user requested
+    if (shouldReturnHtml) {
+      const errorHtml = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><title>Error</title></head>
 <body style="font-family: system-ui; max-width: 600px; margin: 50px auto; padding: 20px; color: #f43f5e;">
@@ -1083,16 +1106,16 @@ export async function GET(request: Request): Promise<Response> {
   <p>${escapeHtml(errorMessage)}</p>
   <p><a href="?raw=1" style="color: #c7ff1a;">View raw markdown</a></p>
 </body>
-</html>`;
-			return new Response(errorHtml, {
-				status: 500,
-				headers: { "Content-Type": "text/html; charset=utf-8" },
-			});
-		}
+</html>`
+      return new Response(errorHtml, {
+        status: 500,
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      })
+    }
 
-		return new Response(`Error: ${errorMessage}`, {
-			status: 500,
-			headers: { "Content-Type": "text/plain; charset=utf-8" },
-		});
-	}
+    return new Response(`Error: ${errorMessage}`, {
+      status: 500,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    })
+  }
 }

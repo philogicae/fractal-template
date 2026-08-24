@@ -377,11 +377,11 @@ Usage:
 
 Dark mode:
 
-- Powered by [`next-themes`](https://github.com/pacocoursey/next-themes) via `app/providers.tsx` (`attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`).
+- Powered by [`next-themes`](https://github.com/pacocoursey/next-themes) via `app/providers.tsx` (`attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`, `disableTransitionOnChange`).
 - `ThemeProvider` injects its own pre-hydration script, toggles the `dark` class on `<html>`, and persists the choice to `localStorage` (`theme` key).
 - `ThemeToggle` (`app/components/ThemeToggle.tsx`) reads `resolvedTheme` and calls `setTheme("light"|"dark")`.
 - `html` / `html.dark` background colors in `globals.css` match the first paint so neither mode flashes.
-- Falls back to `prefers-color-scheme` when no preference is stored.
+- Dark is always the default — `prefers-color-scheme` is never consulted; the ThemeToggle choice persists in `localStorage` (`theme` key).
 
 ## Utilities
 

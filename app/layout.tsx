@@ -95,6 +95,10 @@ export default async function RootLayout({
 }): Promise<React.ReactElement> {
   const { locale, dict } = await getCurrentDictionary()
   const cfWebAnalyticsToken = process.env.CF_WEB_ANALYTICS_TOKEN
+  // Computed on the server so the prerendered markup and the hydrated
+  // client agree — a client-side `new Date().getFullYear()` bakes the
+  // build-time year into static HTML and can mismatch across New Year.
+  const year = new Date().getFullYear()
   return (
     <html
       lang={locale}
@@ -125,7 +129,7 @@ export default async function RootLayout({
         <Providers locale={locale} dict={dict}>
           <NavBar />
           <main>{children}</main>
-          <Footer />
+          <Footer year={year} />
         </Providers>
         {isVercel && (
           <>

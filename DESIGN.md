@@ -3,7 +3,7 @@
 
 **Theme:** dark + light variants
 
-A sophisticated interface with two distinct personalities. In dark mode, pitch black creates an immersive, professional command center canvas punctuated by neon lime and cyan accents — high contrast, high energy, developer-tool aesthetic. In light mode, sky white provides a fresh, airy background that transitions from warm orange through amber and golden yellow to soft sand and finally azure mist, with turquoise accents — evoking a vibrant Mediterranean sunrise where warm desert sands meet cool ocean waters. Both modes share Inter Variable typography with tight tracking and compact 6px-radius components.
+A sophisticated interface with two distinct personalities. In dark mode, pitch black creates an immersive, professional command center canvas punctuated by neon lime and cyan accents — high contrast, high energy, developer-tool aesthetic. In light mode, sky white provides a fresh, airy background; the navbar carries a soft sky-to-azure wash (Sky White → Cloud Light → Azure Mist) anchored by turquoise accents. Both modes share Inter Variable typography with tight tracking and compact 6px-radius components.
 
 ## Tokens — Colors
 
@@ -45,14 +45,9 @@ A sophisticated interface with two distinct personalities. In dark mode, pitch b
 | Coral Soft | `#fda4af` | `--color-coral-soft` | Soft sunset accents, decorative highlights |
 | Sand Warm | `#fde68a` | `--color-sand-warm` | Warm sandy highlights, warning tints |
 
-### Navbar Gradient Colors — Light Mode Only
+### Navbar Wash — Light Mode
 
-| Name | Value | Token | Role |
-|------|-------|-------|------|
-| Orange | `#ea580c` | `--color-navbar-orange` | Navbar gradient start — sunrise warmth at 0% |
-| Amber | `#f59e0b` | `--color-navbar-amber` | Navbar gradient middle — golden transition at 25% |
-| Yellow | `#fbbf24` | `--color-navbar-yellow` | Navbar gradient middle — bright sun at 50% |
-| Sand | `#fde68a` | `--color-navbar-sand` | Navbar gradient end — soft beach at 75% before azure |
+The light-mode navbar is a soft cool wash at 100deg (see `html:not(.dark) header` in `globals.css`): Sky White → Cloud Light → Azure Mist. Logo/nav text renders in Deep Ocean for contrast; no dedicated gradient tokens are used.
 
 ### Heading Gradient Tokens
 
@@ -218,6 +213,18 @@ A sophisticated interface with two distinct personalities. In dark mode, pitch b
 
 ## Components
 
+### Navbar
+
+**Role:** Top-level navigation — logo, nav links, language switcher, theme toggle, mobile menu
+
+- Floating pill: `sticky top-3 z-50 mx-3 sm:mx-4 md:mx-6 rounded-lg shadow-(--shadow-xl)`, `border` `--color-border-default`, solid `--color-bg-primary` in dark mode
+- **Light mode:** the pill carries a soft sky-to-azure wash (Sky White → Cloud Light → Azure Mist, 100deg, see `html:not(.dark) header`); logo/nav text becomes deep-ocean
+- Height: `--navbar-height` (desktop) / `--navbar-height-mobile` (mobile); padding `px-3 sm:px-4 md:px-6`
+- Hover rule: nav links and the lang switcher get a surface fill with primary text (`--color-bg-surface` / `--color-text-primary`); the theme toggle inverts to `--color-pitch-black` / `--color-ghost-white`
+- Mobile menu: absolute dropdown below the pill (`top-[calc(100%+8px)] right-0`, `rounded-(--radius-cards)`, `bg-secondary`, `shadow-lg`, `z-50`); dismisses on outside click and `Escape`
+
+**Logo** (`globals.css`): the `logo.gif` mark is white-on-transparent. It renders untouched in dark mode; in light mode CSS `invert(1)` flips the glyph dark so it reads against the light navbar wash (matching the deep-ocean nav text).
+
 ### Primary Action Button (Filled)
 **Role:** Main CTA — Get Started, Submit, Confirm
 
@@ -242,7 +249,7 @@ Background transparent, text `--color-text-primary`, border-radius 0px (in nav) 
 - **Minimum width:** 160px (lang), 200px (mobile)
 - **Spacing:** 8px gap from trigger (`top-[calc(100%+8px)]`)
 
-**Click-outside behavior:** Menus close when clicking anywhere on the page, including the navbar/topbar, except when clicking inside the dropdown menu itself. Implemented via `useClickOutside` hook.
+**Click-outside behavior:** Menus close when clicking anywhere on the page — including the navbar/topbar — except inside the dropdown menu itself or its trigger, and close on `Escape`. Implemented via the `useClickOutside` hook (pass both panel and trigger ids).
 
 ### Theme Toggle Icon
 **Role:** Sun/moon icon for dark/light mode switching
@@ -371,12 +378,6 @@ Uses status colors directly on the dot: `--color-emerald` for success, `--color-
   --color-emerald: #10b981;
   --color-amber: #f59e0b;
   --color-rose: #f43f5e;
-
-  /* Navbar Gradient - Light Mode */
-  --color-navbar-orange: #ea580c;
-  --color-navbar-amber: #f59e0b;
-  --color-navbar-yellow: #fbbf24;
-  --color-navbar-sand: #fde68a;
 
   /* Heading Gradients */
   --color-heading-gradient-start: var(--color-neon-lime); /* dark mode default */

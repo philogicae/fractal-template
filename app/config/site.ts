@@ -51,6 +51,7 @@ export const siteConfig = {
   ],
   url: "https://fractal-template.binaryeyelabs.xyz",
   license: "MIT License",
+  author: "BinaryEyeLabs",
   themeColor: {
     light: "#ffffff", // Pure White canvas
     dark: "#08090a", // Pitch Black canvas
