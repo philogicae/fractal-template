@@ -408,7 +408,7 @@ import { useClickOutside } from "@utils/click-outside";
 - Default to Server Components; keep `"use client"` boundaries small.
 - Reach for `memo()` / `useCallback` / `useMemo` only when profiling shows a real re-render cost. Do not wrap zero-prop or stable-prop components in `memo()`.
 - Always select Zustand state with a selector.
-- `next.config.mjs` enables `output: "standalone"`, `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, `optimizeCss`, compression, long-term caching for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set — add one if your app needs it.
+- `next.config.mjs` enables `output: "standalone"`, `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, compression, long-term caching for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set — add one if your app needs it.
 - CI/CD runs on every push (`lint` → `build` → `test`) via `.github/workflows/ci-cd.yml`.
 
 ## Scripts

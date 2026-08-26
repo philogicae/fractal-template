@@ -182,7 +182,6 @@ docker compose up --build       # Build and run on :3000
 - **Standalone output** — `output: "standalone"` in `next.config.mjs` produces a minimal production server bundle for slim Docker images.
 - **Long-term caching** — 1 week for `/images`, `/fonts`, and `/_next/static` (Next.js content-hashed URLs make this safe).
 - **Package import optimization** — `@heroui/react`, `@heroui/styles` tree-shaken via `experimental.optimizePackageImports`.
-- **CSS optimization** — `experimental.optimizeCss` enabled.
 - **Compression** — enabled by default; `x-powered-by` header stripped.
 
 ## Customization

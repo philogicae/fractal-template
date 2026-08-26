@@ -215,5 +215,5 @@ docs/assets:
 - Chore: update deps
 - Chore: simplify Docker env vars, use DOCKER_PROJECT_NAME for container and image names
 - Chore: upgrade pnpm to 11.17.0 and bump dependencies
-- Chore: upgrade TypeScript to 7.0.2, jsdom to 30.0.1, and enable useTypeScriptCli experimental flag
+- Chore: upgrade TypeScript to 7.0.2 and jsdom to 30.0.1
 - Chore: upgrade pnpm to 11.22.0, Next.js to 16.3.1, and add Cloudflare Web Analytics support
