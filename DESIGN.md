@@ -3,7 +3,7 @@
 
 **Theme:** dark + light variants
 
-A sophisticated interface with two distinct personalities. In dark mode, pitch black creates an immersive, professional command center canvas punctuated by neon lime and cyan accents — high contrast, high energy, developer-tool aesthetic. In light mode, sky white provides a fresh, airy background; the navbar carries a soft sky-to-azure wash (Sky White → Cloud Light → Azure Mist) anchored by turquoise accents. Both modes share Inter Variable typography with tight tracking and compact 6px-radius components.
+A sophisticated interface with two distinct personalities. In dark mode, pitch black creates an immersive, professional command center canvas punctuated by neon lime and cyan accents — high contrast, high energy, developer-tool aesthetic. In light mode, sky white provides a fresh, airy background; the navbar carries a soft sky-to-azure wash (Sky White → Cloud Light → Azure Mist) anchored by turquoise accents. Both modes share Inter typography (static weights, tight tracking) and compact 6px-radius components.
 
 ## Tokens — Colors
 
@@ -98,21 +98,21 @@ The light-mode navbar is a soft cool wash at 100deg (see `html:not(.dark) header
 
 ## Tokens — Typography
 
-### Inter Variable — All UI text including headings, body text, and interactive elements
+### Inter — All UI text including headings, body text, and interactive elements
 
-**Weights:** 300, 400, 510, 590  
-**Substitute:** Inter (Google Fonts) with weights 300, 400, 500, 600  
+**Loaded weights:** 300, 400, 500, 600, 700 (static weights via `next/font`, see `app/layout.tsx`)  
 **Sizes:** 10px, 13px, 14px, 16px, 17px, 24px, 32px, 48px, 72px  
 **Line height:** 1.0–1.47  
 **Letter spacing:** -0.22px to -0.1px  
-**Role:** Clean, modern, highly legible at small sizes. Weight 590 is the signature semibold for buttons and emphasis; weight 300 for display headlines creates an airy, open feel. Tight tracking (-0.13px at 14px) keeps UI text crisp and compact.
+**Role:** Clean, modern, highly legible at small sizes. Weight 600 (`font-semibold`) is the signature semibold for buttons, headings, and emphasis; weight 300 for display headlines creates an airy, open feel. Tight tracking (-0.13px at 14px) keeps UI text crisp and compact.
+
+> Note: the type-scale tokens below are declared but not yet consumed by utility classes in components — sizes are applied ad hoc with Tailwind classes (`text-xs`, `text-sm`, `tracking-[-0.13px]`, etc.).
 
 ### IBM Plex Mono — Code snippets, technical details, data displays
 
-**Weight:** 400  
+**Loaded weights:** 400, 500 (static weights via `next/font`, see `app/layout.tsx`)  
 **Substitute:** JetBrains Mono, SFMono-Regular, Menlo  
-**Sizes:** 13px, 14px  
-**Line height:** 1.4–1.69  
+**Sizes/line height:** No mono size tokens exist — mono text is applied ad hoc via Tailwind's `font-mono` plus arbitrary size/leading classes per component.  
 **Role:** Monospace signals machine-generated or technical content within prose. Used for API responses, code blocks, and inline technical annotations.
 
 ### Type Scale
@@ -193,7 +193,7 @@ The light-mode navbar is a soft cool wash at 100deg (see `html:not(.dark) header
 | xl | `rgba(8, 9, 10, 0.6) 0px 4px 32px 0px` | `--shadow-xl` |
 | input | `rgba(0, 0, 0, 0.2) 0px 0px 0px 1px` | `--shadow-input` |
 | focus | `rgba(228, 242, 34, 0.4) 0px 0px 0px 2px` | `--shadow-focus` |
-| halo-color | `transparent` | `--shadow-halo-color` | Logo halo effect (used in light mode) |
+| halo-color | `transparent` | `--shadow-halo-color` |
 
 ### Shadows — Light Mode
 
@@ -207,7 +207,9 @@ The light-mode navbar is a soft cool wash at 100deg (see `html:not(.dark) header
 | xl | `rgba(6, 182, 212, 0.1) 0px 4px 32px 0px` | `--shadow-xl` |
 | input | `rgba(6, 182, 212, 0.08) 0px 0px 0px 1px` | `--shadow-input` |
 | focus | `rgba(6, 182, 212, 0.3) 0px 0px 0px 2px` | `--shadow-focus` |
-| halo-color | `rgba(0, 0, 0, 0.3)` | `--shadow-halo-color` | Logo halo for white logo on light bg |
+| halo-color | `rgba(0, 0, 0, 0.3)` | `--shadow-halo-color` |
+
+> **Usage note:** only `--shadow-xl` is currently consumed (Navbar pill). `--shadow-sm`, `--shadow-md`, `--shadow-subtle`, `--shadow-subtle-2`, `--shadow-subtle-3`, `--shadow-input`, `--shadow-focus`, and `--shadow-halo-color` are defined but currently unconsumed — they are available for customizers. In particular, `--shadow-focus` is **not** the active focus treatment: focus is handled by the global `:focus-visible` outline (see [Accessibility](#accessibility)). The light-mode logo halo is a CSS `filter: invert(1)` (`.logo-halo`), not `--shadow-halo-color`.
 
 ---
 
@@ -228,14 +230,16 @@ The light-mode navbar is a soft cool wash at 100deg (see `html:not(.dark) header
 ### Primary Action Button (Filled)
 **Role:** Main CTA — Get Started, Submit, Confirm
 
-Dark mode: Background `#a3e635` (Neon Lime), text `#08090a` (Pitch Black), border-radius 6px, padding 12px 24px, font Inter 590 15px. Hover: slight brightness increase.
+**Implementation** (`app/page.tsx`): `h-8 sm:h-9 px-4 sm:px-6 text-xs font-semibold rounded-(--radius-buttons) hover:brightness-110 focus-visible:outline-(--color-accent-secondary)`
 
-Light mode: Background `#06b6d4` (Turquoise), text `#f0f9ff` (Sky White), border-radius 6px, same padding and font. Hover: slight brightness increase.
+Dark mode: Background `--color-accent-primary` (Neon Lime, `#a3e635`), text `--color-bg-primary` (Pitch Black), height 32px/36px, font Inter 600 at 12px. Hover: slight brightness increase.
+
+Light mode: Background `--color-accent-primary` (Turquoise, `#06b6d4`), text `--color-bg-primary` (Sky White), same height, radius, and font. Hover: slight brightness increase.
 
 ### Ghost Navigation Button
 **Role:** Navigation and secondary actions
 
-Background transparent, text `--color-text-primary`, border-radius 0px (in nav) or 6px (standalone), no explicit padding. Hover: subtle background fill at 50% opacity of surface color.
+Nav links (`app/layout/Navbar.tsx`): `text-xs font-medium tracking-[-0.13px]`, transparent background, text `--color-text-muted`, radius `--radius-tags` (2px), explicit `px-3 py-1.5` (mobile compact variant: `px-2 py-1.5`). Hover classes declare a solid inverse fill (`hover:bg-(--color-pitch-black)` / `dark:hover:bg-(--color-ghost-white)` with swapped text), but the `header nav a:hover` rules in `globals.css` (higher specificity) resolve hover to a **surface fill**: `--color-bg-surface` background with `--color-text-primary` text in both modes. Active link: `bg-(--color-bg-surface) text-(--color-text-primary)`. The standalone ghost CTA (`app/page.tsx`) uses `px-4`, text-secondary, and fills with `--color-bg-surface` on hover. The theme toggle hover instead inverts to a pitch-black/ghost-white swap in light mode (and the inverse in dark).
 
 ### Dropdown Menus (Language & Mobile)
 **Role:** Floating menus that overlay content without pushing page elements
@@ -244,7 +248,7 @@ Background transparent, text `--color-text-primary`, border-radius 0px (in nav) 
 - **Background:** `--color-bg-secondary` (graphite in dark, cloud-light in light)
 - **Border:** 1px solid `--color-border-default`
 - **Border radius:** `--radius-cards` (6px)
-- **Shadow:** `--shadow-xl`
+- **Shadow:** Tailwind `shadow-lg` (not a design token)
 - **Z-index:** 50 to overlay other content
 - **Minimum width:** 160px (lang), 200px (mobile)
 - **Spacing:** 8px gap from trigger (`top-[calc(100%+8px)]`)
@@ -262,33 +266,61 @@ Background transparent, text `--color-text-primary`, border-radius 0px (in nav) 
 ### Default Card
 **Role:** Content container
 
-Dark mode: Background `#111113` (Graphite), border 1px solid `#27272a`, border-radius 6px, shadow `rgba(0, 0, 0, 0.4) 0px 2px 4px 0px`, padding 12px.
+Built from HeroUI `Card` with `border border-(--color-border-default) bg-(--color-bg-secondary) rounded-(--radius-cards)`. All current consumers (playground, error, not-found pages) override the default HeroUI shadow with `shadow-none`; padding varies per use (`p-2 sm:p-3` in FeatureCard, `p-4 sm:p-6 md:p-8` in not-found, etc.).
 
-Light mode: Background `#f0f9ff` (Sky White), border 1px solid `#bae6fd`, border-radius 6px, shadow `rgba(6, 182, 212, 0.06) 0px 2px 4px 0px`, padding 12px.
+Dark mode: Background `#111113` (Graphite), border 1px solid `#27272a`, border-radius 6px, **no shadow** (consumers set `shadow-none`).
+
+Light mode: Background `--color-bg-secondary` (Cloud Light), border 1px solid Azure Mist, border-radius 6px, **no shadow** (consumers set `shadow-none`).
 
 ### Elevated Card
-**Role:** Prominent content, modals, dialogs
+**Role:** No dedicated component exists.
 
-Dark mode: Background `#1a1a1e` (Slate Elevated), border-radius 6px, inset shadow `rgb(35, 37, 42) 0px 0px 0px 1px`, padding 24px vertical.
-
-Light mode: Background `#f0f9ff`, border 1px solid `#bae6fd`, same radius and padding.
+`--color-bg-elevated` is available as a token but is currently only consumed as a hover/active background (FeatureCard hover, LanguageSwitcher active item). A "prominent card" component using it can be built by customizers; the token is documented for that purpose.
 
 ### Input Field
-**Role:** User input, form fields
+**Role:** No input component exists in the codebase yet.
 
-Dark mode: Background transparent with `#27272a` border, text `#f8fafc`, border-radius 6px, padding 12px 14px. Focus: border color shifts to lighter, shadow appears.
-
-Light mode: Background `#ffffff`, text `#0c4a6e`, border 1px solid `#bae6fd`, border-radius 6px, padding 12px 14px. Focus: border shifts to turquoise.
+`--color-border-input`, `--shadow-input`, and `--radius-inputs` are defined for customizers to build one. Note: the previously documented `#ffffff` light-mode input background was never a design token.
 
 ### Badge
-**Role:** Label or tag
+**Role:** No standalone label/tag component exists.
 
-Background `--color-slate-muted` (dark) or `--color-azure-mist` (light), text `--color-text-muted`, border-radius 4px, padding 0px 6px, font 10px.
+The only badge pattern in the codebase is `StatusBadge` (below). `--radius-badges` (4px) is defined but currently unconsumed.
 
 ### Status Badge
-**Role:** Status indicator with colored dot
+**Role:** Status indicator with colored dot (`app/components/StatusBadge.tsx`)
 
-Uses status colors directly on the dot: `--color-emerald` for success, `--color-amber` for warning, `--color-rose` for error, `--color-accent-primary` for loading. Border and background use semantic tokens.
+- **Container:** `inline-flex items-center gap-1 rounded-full border border-(--color-border-default) bg-(--color-bg-surface)/60 px-1.5 py-0.5 text-[9px] sm:text-xs font-medium`
+- **Dot:** `h-1.5 w-1.5 rounded-full` with the status color
+- **Statuses:** `idle` (text-muted), `loading` (accent-primary, dot pulses with `animate-pulse`), `success` (`--color-emerald`), `error` (`--color-rose`)
+- There is **no amber/warning status** — amber is only used in the playground for HTTP PUT method badges.
+
+---
+
+## Utility Classes
+
+Custom classes defined in `globals.css`:
+
+- **Typography utilities** (`.text-caption`, `.text-body`, `.text-body-sm`, `.text-heading`, `.text-heading-lg`): apply the type-scale tokens (size + line-height + tracking). Currently **unused** — components apply sizes with Tailwind classes instead; available for customizers.
+- **`.logo-halo`**: wraps the white-on-transparent `logo.gif`. Untouched in dark mode; in light mode the image is flipped with `filter: invert(1)` so it reads against the light navbar wash. Used by the Navbar. (Despite the name, it does not use `--shadow-halo-color`.)
+- **`.text-transparent`** (`-webkit-text-fill-color: transparent`): helper for gradient text. Currently unused.
+- **`.heading-accent-gradient`**: 90deg `--color-heading-gradient-start` → `--color-heading-gradient-end` clipped to text. Used by the landing page hero heading.
+- **Header/footer hairlines**: `header::after` and `footer::after` draw a 1px horizontal gradient edge (transparent → `--color-border-default` → transparent, opacity 0.6 header / 0.4 footer). Undocumented decorative edges between navbar/page and page/footer.
+
+## Animations
+
+Keyframes and animation helpers in `globals.css`:
+
+- **`@keyframes fade-in-up`**: opacity 0 → 1 with `translateY(20px)` → 0. Applied via `.animate-fade-in-up` (0.6s ease-out forwards) — used by `AnimatedSection`, which wraps the landing page hero and sections.
+- **`@keyframes fade-in`**: simple opacity 0 → 1 via `.animate-fade-in` (0.3s ease-out forwards). Defined but currently unused.
+- **`.fill-mode-forwards`**: `animation-fill-mode: forwards`; used alongside `.animate-fade-in-up` (AnimatedSection starts at `opacity-0` and fills forwards after the delayed animation).
+- **`.stagger-1` … `.stagger-5`**: 100ms–500ms `animation-delay` helpers. Defined but currently unused — components stagger via inline `animationDelay` styles instead.
+- **Tailwind built-ins in use**: `animate-pulse` (Skeleton, StatusBadge loading dot). No `animate-spin` usage in app code.
+
+## Accessibility
+
+- **Reduced motion**: a `@media (prefers-reduced-motion: reduce)` block clamps all `animation-duration` and `transition-duration` to `0.01ms` and forces `animation-iteration-count: 1` on every element and pseudo-element.
+- **Focus**: a global `:focus-visible` rule sets `outline: 2px solid var(--color-accent-primary)` with `outline-offset: 2px`. The landing-page CTA additionally overrides with `focus-visible:outline-(--color-accent-secondary)`. There is no focus glow shadow — `--shadow-focus` is defined but never consumed.
 
 ---
 
@@ -312,9 +344,24 @@ Uses status colors directly on the dot: `--color-emerald` for success, `--color-
 
 ## Elevation
 
-**Dark Mode:** Layered elevation comes from subtle shadows with black tints. Cards use `rgba(0, 0, 0, 0.4) 0px 2px 4px 0px` — just enough to lift off the pitch black ground. Inset shadows like `rgb(35, 37, 42) 0px 0px 0px 1px inset` create internal borders without adding visual weight. Focus states glow with lime: `rgba(228, 242, 34, 0.4) 0px 0px 0px 2px`.
+**Dark Mode:** Layered elevation comes from subtle shadows with black tints. Cards use `rgba(0, 0, 0, 0.4) 0px 2px 4px 0px` — just enough to lift off the pitch black ground. Inset shadows like `rgb(35, 37, 42) 0px 0px 0px 1px inset` create internal borders without adding visual weight. Focus is handled by the global `:focus-visible` outline (2px accent, 2px offset), not a shadow.
 
-**Light Mode:** Fresh, airy shadows with cyan tints. Cards use `rgba(6, 182, 212, 0.06) 0px 2px 4px 0px` — barely-there elevation that suggests floating on water. The inset border `rgb(224, 242, 254) 0px 0px 0px 1px inset` creates a hairline without harsh edges. Focus states glow with turquoise.
+**Light Mode:** Fresh, airy shadows with cyan tints. Cards use `rgba(6, 182, 212, 0.06) 0px 2px 4px 0px` — barely-there elevation that suggests floating on water. The inset border `rgb(224, 242, 254) 0px 0px 0px 1px inset` creates a hairline without harsh edges. Focus uses the same `:focus-visible` outline mechanism, colored by `--color-accent-primary` (turquoise in light mode).
+
+---
+
+## Token Usage Notes
+
+This is a template: the token set intentionally ships complete so customizers have a full system out of the box. Some tokens are currently unconsumed by app code and are available for new components:
+
+- **Shadows:** `--shadow-sm`, `--shadow-md`, `--shadow-subtle`, `--shadow-subtle-2`, `--shadow-subtle-3`, `--shadow-input`, `--shadow-focus`, `--shadow-halo-color` (see the shadow usage note above; the light-mode logo halo is `filter: invert(1)`, not `--shadow-halo-color`).
+- **Colors:** `--color-void`, `--color-electric-violet`, `--color-hot-pink`, `--color-sand-pale`, `--color-coral-soft`, `--color-sand-warm`, `--color-accent-hover`, `--color-text-tertiary`, `--color-border-input` are unconsumed by app components (the `skill.md` route's embedded stylesheet references some of them, but that stylesheet is scoped to the skill page — see below).
+- **Spacing & layout:** the `--spacing-*` scale and `--element-gap`, `--section-gap`, `--card-padding`, `--page-max-width` (components use Tailwind spacing utilities directly; `--navbar-height`/`--navbar-height-mobile` are consumed by the Navbar).
+- **Radius:** `--radius-pill`, `--radius-badges`, `--radius-default`.
+
+### Out-of-system tokens
+
+`app/skill.md/route.ts` embeds its own scoped stylesheet with extra tokens (`--color-code-bg`, `--color-inline-code-bg`) and a `135deg` accent → hot-pink gradient; these apply only to the skill page's styled view and are not part of the shared design system.
 
 ---
 
@@ -324,9 +371,9 @@ Uses status colors directly on the dot: `--color-emerald` for success, `--color-
 - Use Pitch Black (`#08090a`) for dark mode page background — professional, pro feel
 - Use Sky White (`#f0f9ff`) for light mode page background — light blue sky, Mediterranean morning
 - Apply **paired accents** — Lime + Cyan for dark mode, Turquoise + Azure for light mode
-- Use the full warm gradient in light mode navbar: Orange → Amber → Yellow → Sand → Azure Mist
+- Use the cool sky-to-azure wash in the light mode navbar: Sky White → Cloud Light → Azure Mist
 - Layer surfaces for depth using the 4-level hierarchy with subtle color tints
-- Use Inter Variable with tight letter-spacing (-0.22px for display, -0.13px for body)
+- Use Inter with tight letter-spacing (-0.22px for display, -0.13px for body)
 - Maintain 6px default radius (cards, buttons, inputs), 2px tags, 4px badges
 - Use Steel Blue (`#94a3b8`) for dark mode tertiary text
 - Use Warm Slate (`#475569`) for light mode tertiary text

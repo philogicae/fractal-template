@@ -44,7 +44,7 @@ pnpm install
 pnpm dev           # http://localhost:3000
 ```
 
-Requirements: **Node.js 24+**, **pnpm 11+**, modern browser.
+Requirements: **Node.js 26+**, **pnpm 11+**, modern browser.
 
 ## 2. Repository tour
 
@@ -75,11 +75,15 @@ Requirements: **Node.js 24+**, **pnpm 11+**, modern browser.
 │   ├── layout/                  # Navbar.tsx (with LanguageSwitcher), Footer.tsx — driven by `@config/site`
 │   ├── stores/                  # Zustand (no barrel — import per file)
 │   │   └── counter.ts           # DEMO — delete
+│   ├── test/                    # Test harness (Vitest)
+│   │   ├── react.tsx            # act/createRoot harness (no testing-library)
+│   │   └── stubs/
+│   │       └── server-only.ts   # Stub for the `server-only` package in tests
 │   ├── utils/                   # cn(), debounce, media-query, click-outside — Keep
 │   ├── playground/              # DEMO page — DELETE
 │   ├── globals.css              # Design tokens — CUSTOMIZE
 │   ├── layout.tsx               # Root layout + metadata — CUSTOMIZE
-│   ├── providers.tsx            # Client providers (next-themes) — Keep
+│   ├── providers.tsx            # Client providers (next-themes + LocaleProvider) — Keep
 │   ├── page.tsx                 # Landing page — REPLACE
 │   ├── error.tsx / loading.tsx / not-found.tsx   # Keep, restyle
 ├── public/                      # favicon, logo, manifest, robots — REPLACE
@@ -94,6 +98,7 @@ Requirements: **Node.js 24+**, **pnpm 11+**, modern browser.
 ├── CHECKLIST.md                 # Tickable bootstrap checklist — delete once every box is ticked
 ├── DESIGN.md                    # Complete design system reference
 └── vitest.config.js             # Test runner configuration
+                                  # Colocated tests ship as *.test.ts(x) next to the code
 ```
 
 **Path aliases** (`tsconfig.json`):
@@ -131,7 +136,7 @@ support that work. For the task list itself, switch to `CHECKLIST.md`.
 - **Add a locale:** create `app/i18n/dictionaries/<code>.json` (including `meta.{flag,native}`), then add one static import + one entry in the `dictionaries` map in `app/i18n/config.ts`. **Drop a locale:** delete the JSON and remove its import + map entry. Everything else derives from that map.
 - Nav entries in `app/config/site.ts` carry a `labelKey` — add the matching key to `NavLabelKey` and to `dict.nav` in every locale file when adding / renaming one.
 - Read the dictionary via `useDict()` (`@i18n/LocaleProvider`) on the client and `getCurrentDictionary()` (`@i18n/server`) on the server. Both resolve the same active locale.
-- `public/images/` ships **empty**; supply `favicon.ico`, `logo.gif`, `apple-touch-icon.png`, `192x192.png`, `512x512.png`, `screenshot.jpeg` or the references in `layout.tsx`, `Navbar.tsx`, and `manifest.json` will 404.
+- `public/images/` ships with template placeholders (`logo.gif`, `apple-touch-icon.png`, `192x192.png`, `512x512.png`, `screenshot.jpeg`); replace each with your own files so the references in `layout.tsx`, `Navbar.tsx`, and `manifest.json` point at your brand.
 
 ## 4. Delete demo-only code
 
@@ -419,6 +424,8 @@ pnpm build    # Production build (Turbopack)
 pnpm start    # Production server
 pnpm lint     # Biome check + auto-fix
 pnpm test     # Vitest run
+pnpm test:watch # Vitest in watch mode
+pnpm test:ui  # Vitest with browser UI
 pnpm upgrade  # pnpm update && pnpm prune
 pnpm clean    # rimraf .next out node_modules && pnpm install
 pnpm repomix  # Markdown snapshot of the codebase for agents

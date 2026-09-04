@@ -1,12 +1,12 @@
 # Fractal Template
 
-[![Node](https://img.shields.io/badge/node-24%2B-blue)](https://nodejs.org)
+[![Node](https://img.shields.io/badge/node-26%2B-blue)](https://nodejs.org)
 [![pnpm](https://img.shields.io/badge/pnpm-11%2B-blue)](https://pnpm.io)
 [![Actions status](https://github.com/philogicae/fractal-template/actions/workflows/ci-cd.yml/badge.svg?cache-control=no-cache)](https://github.com/philogicae/fractal-template/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/philogicae/fractal-template)
 
-A modern, production-ready Next.js template featuring the latest technologies and best practices.
+A modern Next.js template with HeroUI, Tailwind CSS, and TypeScript.
 
 ## Features
 
@@ -32,7 +32,7 @@ A modern, production-ready Next.js template featuring the latest technologies an
 
 ### Prerequisites
 
-- Node.js 24+
+- Node.js 26+ (enforced via `package.json` `engines` + `.npmrc` `engine-strict`)
 - pnpm 11+
 
 ### Clone and Setup
@@ -80,7 +80,8 @@ app/
 ├── i18n/                  # Internationalization (no URL segment)
 │   ├── config.ts          # Single registry: Locale, Dictionary, locales,
 │   │                      #   localeMeta, hasLocale(), getDictionary()
-│   ├── dictionaries/      # en.json (default). Delete extra locales when customizing;
+│   ├── dictionaries/      # 12 locale files ship (en.json is the default/fallback).
+│   │                      # Delete extra locales when customizing;
 │   │                      # add more only when needed
 │   ├── get-locale.ts      # Accept-Language matcher (zero-dep)
 │   ├── server.ts          # getCurrentLocale / getCurrentDictionary
@@ -93,6 +94,10 @@ app/
 │   └── page.tsx
 ├── stores/                # Zustand state stores
 │   └── counter.ts         # (demo) counter store
+├── test/                  # Test harness (Vitest)
+│   ├── react.tsx          # act/createRoot harness (no testing-library)
+│   └── stubs/
+│       └── server-only.ts # Stub for the `server-only` package in tests
 ├── utils/                 # Utility functions
 │   ├── tw.ts              # cn() class merger
 │   ├── debounce.ts        # Debounce hooks
@@ -108,6 +113,8 @@ app/
 └── sitemap.ts             # SEO sitemap generation
 
 vitest.config.js           # Vitest configuration (path aliases, jsdom)
+                           # Colocated tests ship as *.test.ts(x) next to the code (10 files)
+.env.example               # Environment variable template
 public/                    # Static assets
 ├── images/
 │   ├── logo.gif
@@ -123,6 +130,7 @@ SKILL.md                   # Agent Skill definition (served at /skill.md)
 AGENTS.md                  # In-repo agent conventions
 CHECKLIST.md               # Tickable bootstrap checklist (delete once done)
 DESIGN.md                  # Complete design system reference
+pnpm-workspace.yaml        # pnpm workspace config (engine-strict, lockfile settings)
 ```
 
 ## AI Agent Configuration
@@ -157,7 +165,7 @@ The skill definition is served at `/skill.md` with content negotiation: beautifu
 
 ### Live Demo
 
-Visit the [live demo](https://fractal-template.binaryeyelabs.xyz) to see the template in action, including the AI Agent Integration section with tabs for AGENTS.md, SKILL.md, and Repomix documentation.
+Visit the [live demo](https://fractal-template.binaryeyelabs.xyz) to see the template in action: a single hero section with animated CTA buttons (playground, SKILL.md, GitHub, Deploy to Vercel) above a feature grid.
 
 ## Deployment
 
@@ -169,7 +177,7 @@ A multi-stage `Dockerfile` (`base` → `deps` → `builder` → slim `runner`) a
 docker compose up --build       # Build and run on :3000
 ```
 
-`compose.yaml` sets `NODE_ENV=production` and optionally loads a local `.env` file. Project name, container name, image name/tag, and host port are all configurable via `.env` (`DOCKER_PROJECT_NAME`, `DOCKER_CONTAINER_NAME`, `DOCKER_IMAGE_NAME`, `DOCKER_IMAGE_TAG`, `DOCKER_PORT`) — defaults fall back to `fractal-template` / `3000`.
+`compose.yaml` sets `NODE_ENV=production` and optionally loads a local `.env` file. Two variables are configurable via `.env`: `DOCKER_PROJECT_NAME` (compose project name, reused for the container and image names) and `DOCKER_PORT` (host port) — defaults fall back to `fractal-template` / `3000`.
 
 ### GitHub Actions
 
@@ -183,6 +191,13 @@ docker compose up --build       # Build and run on :3000
 - **Long-term caching** — 1 week for `/images`, `/fonts`, and `/_next/static` (Next.js content-hashed URLs make this safe).
 - **Package import optimization** — `@heroui/react`, `@heroui/styles` tree-shaken via `experimental.optimizePackageImports`.
 - **Compression** — enabled by default; `x-powered-by` header stripped.
+
+### Environment variables
+
+- `CF_WEB_ANALYTICS_TOKEN` — optional. When set, the Cloudflare Web Analytics beacon is injected in `app/layout.tsx`; omit it to disable the beacon.
+- `VERCEL_ANALYTICS_ID` — injected automatically by Vercel. `app/layout.tsx` gates both Vercel `Analytics` and `SpeedInsights` on `process.env.VERCEL`, so they render only on Vercel deployments.
+
+See [`.env.example`](./.env.example) for the full annotated list.
 
 ## Customization
 
@@ -222,7 +237,7 @@ html:not(.dark) {
 }
 ```
 
-**Typography:** Inter Variable (weights 300, 400, 510, 590) with tight tracking (-0.13px to -0.22px).
+**Typography:** Inter (static weights 300–700) with tight tracking (-0.1px to -0.22px); IBM Plex Mono (400/500) for code.
 
 **Components:** 6px radius buttons/cards/inputs, 2px tags, 4px badges. Compact density with 8px element gaps. Layered surfaces for elevation with subtle shadows.
 

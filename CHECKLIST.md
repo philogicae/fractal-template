@@ -21,6 +21,7 @@
 
 - [ ] `app/config/site.ts` → `name`
 - [ ] `app/config/site.ts` → `shortName`
+- [ ] `app/config/site.ts` → `author` (consumed by `Footer`)
 - [ ] `app/config/site.ts` → `description`
 - [ ] `app/config/site.ts` → `keywords`
 - [ ] `app/config/site.ts` → `url`
@@ -40,7 +41,7 @@
 
 ## 2. Public assets
 
-> `public/images/` ships **empty** in the template; supply every file below or the references in `app/layout.tsx`, `app/layout/Navbar.tsx`, and `public/manifest.json` will 404.
+> `public/images/` ships with template placeholder assets (logo.gif, apple-touch-icon.png, 192x192.png, 512x512.png, screenshot.jpeg). Replace each with your own branded files — until you do, the references in `app/layout.tsx`, `app/layout/Navbar.tsx`, and `public/manifest.json` will keep pointing at the template placeholders.
 
 - [ ] `public/favicon.ico`
 - [ ] `public/images/logo.gif` (used in `Navbar`)
@@ -53,7 +54,7 @@
 
 > `Navbar` and `Footer` are driven by `siteConfig` (§1). The only hardcoded chrome left here is the logo image itself.
 
-- [ ] `public/images/logo.gif` → replace with your brand logo (referenced by `app/layout/Navbar.tsx`)
+- [ ] `public/images/logo.gif` → replace the shipped placeholder with your brand logo (referenced by `app/layout/Navbar.tsx`)
 
 ## 4. Landing page & design tokens
 
@@ -75,12 +76,12 @@
 
 ### Internationalization
 
-> **Important:** The template ships with multiple locales (`en`, `fr`, `es`, `ro`). When customizing, **delete the extra locales you don't need** and keep only `en.json` (or the locales the user specifically requests).
+> **Important:** The template ships with 12 locales (`en`, `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro` — same order as `app/i18n/config.ts`). When customizing, **delete the extra locales you don't need** and keep only `en.json` (or the locales the user specifically requests).
 >
 > **All user-visible text must use i18n** — no hardcoded strings in components. In Server Components use `const { dict } = await getCurrentDictionary()`, in Client Components use `const dict = useDict()`.
 
 - [ ] `app/i18n/dictionaries/en.json` → translate every `landing.*`, `playground.*`, `nav.*`, `footer.*`, `error.*`, `notFound.*` string for the new product
-- [ ] Delete extra locale files you don't need (e.g., `fr.json`, `es.json`, `ro.json`)
+- [ ] Delete extra locale files you don't need (e.g., `zh.json`, `ar.json`, `ja.json`)
 - [ ] In `app/i18n/config.ts`, remove imports and map entries for deleted locales
 - [ ] (Only if user needs more locales) Add each new locale: create `app/i18n/dictionaries/<code>.json`, add import + map entry in `app/i18n/config.ts`
 - [ ] Each dictionary file has a valid `meta: { flag, native }` — this is what the language switcher renders
@@ -108,8 +109,8 @@ Choose one path:
 
 ## 6. Environment & infrastructure
 
-- [ ] `.env.example` → prune placeholders, add real variables, document each
-- [ ] `compose.yaml` → no edits needed; set `DOCKER_PROJECT_NAME`, `DOCKER_CONTAINER_NAME`, `DOCKER_IMAGE_NAME`, `DOCKER_IMAGE_TAG`, `DOCKER_PORT` in `.env` to override the `fractal-template` / `3000` defaults
+- [ ] `.env.example` → prune placeholders, add real variables, document each (`CF_WEB_ANALYTICS_TOKEN` is optional — it enables the Cloudflare Web Analytics beacon in `app/layout.tsx` when set)
+- [ ] `compose.yaml` → no edits needed; set `DOCKER_PROJECT_NAME` (compose project name, reused for the container and image names) and `DOCKER_PORT` in `.env` to override the `fractal-template` / `3000` defaults
 - [ ] `Dockerfile` → no change needed unless you customize the build (multi-stage, standalone output, non-root runner with HEALTHCHECK)
 - [ ] `.github/workflows/ci-cd.yml` → ready to use as-is; review only if you add tests or deploy targets
 - [ ] `next.config.mjs` → tighten `images.remotePatterns` to your actual image hosts and add a page-level CSP header if your app needs one (SVG responses already get a strict per-image CSP)
@@ -128,7 +129,7 @@ Run these and fix anything that fails.
 - [ ] `pnpm lint` — Biome auto-fix passes
 - [ ] `pnpm build` — production build succeeds
 - [ ] `pnpm dev` — app boots on http://localhost:3000 with no console errors
-- [ ] Every route in `navLinks` resolves (no 404s)
+- [ ] Every route in `siteConfig.nav` resolves (no 404s)
 - [ ] `/playground`, `/api/hello`, `/skill.md` return the expected result (200 if kept, 404 if deleted)
 - [ ] Language switcher in the navbar cycles through every locale you ship and the visible strings actually change (no stale English)
 - [ ] No leftover template branding — grep should return only intentional matches:
