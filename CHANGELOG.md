@@ -185,6 +185,18 @@ docs/assets:
 
 - Docs: add OpenGraph/Twitter card image and update siteConfig.url to production domain
 - Docs: clarify i18n best practices and simplify default locale setup
+- Docs: sync agent docs and design reference with current template state; chore: bump Biome 2.5.12, Vitest 5.0.0, and deps
+
+- AGENTS.md: restructure (Setup commands, Testing instructions, env vars), Node 26+, HeroUI Button loading-prop note, expanded
+  utility/testing sections
+- CHECKLIST.md: placeholder-assets wording, 12-locale list, DOCKER_PROJECT_NAME vars, siteConfig.nav rename, Footer author item
+- DESIGN.md: correct Inter weights (300/400/500/600/700), Button/Card implementation details, shadow usage notes, expanded dark/light
+  elevation docs
+- README.md: Node 26+ badge, add test/ and .env.example to structure, live-demo and compose descriptions
+- SKILL.md: Node 26+, test harness entries in structure, test:watch/test:ui scripts, placeholder-assets wording
+- app/globals.css: reword light-mode navbar gradient comment (sky-to-azure wash)
+- package.json/pnpm-lock.yaml: Biome 2.5.11→2.5.12, @types/react-dom 19.2.5→19.2.7, postcss 8.5.26→8.5.28, Vitest 4.1.11→5.0.0, transitive
+  updates
 
 ### ⚙️ Miscellaneous Tasks
 
@@ -215,5 +227,8 @@ docs/assets:
 - Chore: update deps
 - Chore: simplify Docker env vars, use DOCKER_PROJECT_NAME for container and image names
 - Chore: upgrade pnpm to 11.17.0 and bump dependencies
-- Chore: upgrade TypeScript to 7.0.2 and jsdom to 30.0.1
+- Chore: upgrade TypeScript to 7.0.2, jsdom to 30.0.1, and enable useTypeScriptCli experimental flag
 - Chore: upgrade pnpm to 11.22.0, Next.js to 16.3.1, and add Cloudflare Web Analytics support
+- Chore: update changelog
+- Chore: upgrade pnpm to 11.24.0 and remove experimental Next.js flags
+- Chore: upgrade pnpm to 11.25.0, Next.js to 16.3.4, Biome to 2.5.11, and update dependencies

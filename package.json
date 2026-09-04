@@ -1,7 +1,7 @@
 {
   "name": "fractal-template",
   "description": "A modern Next.js template with HeroUI, Tailwind CSS, and TypeScript",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "private": false,
   "type": "module",
   "packageManager": "pnpm@11.25.0",
