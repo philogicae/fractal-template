@@ -4,7 +4,7 @@
   "version": "1.12.1",
   "private": false,
   "type": "module",
-  "packageManager": "pnpm@11.25.0",
+  "packageManager": "pnpm@12.3.4",
   "minimumReleaseAge": 4320,
   "repository": {
     "type": "git",
