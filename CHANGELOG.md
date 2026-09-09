@@ -232,3 +232,16 @@ docs/assets:
 - Chore: update changelog
 - Chore: upgrade pnpm to 11.24.0 and remove experimental Next.js flags
 - Chore: upgrade pnpm to 11.25.0, Next.js to 16.3.4, Biome to 2.5.11, and update dependencies
+- Chore: update changelog and bump version to 1.12.1
+- Chore: bump pnpm 11.25.0→12.3.4, biome schema 2.5.10→2.5.12
+- Chore: add .local directory to .gitignore
+- Chore: remove PWA manifest and icons, replace screenshot, bump version 1.12.1→1.13.0, update marked 18.0.11→18.0.12; docs: sync PWA removal
+  across agent docs
+
+- public/manifest.json, public/images/192x192.png, 512x512.png: deleted PWA manifest and icons; manifest link removed from app/layout.tsx
+- public/images/screenshot.jpeg: replaced with updated capture
+- package.json, pnpm-lock.yaml: version 1.12.1→1.13.0; marked ^18.0.11→^18.0.12 plus lockfile refresh (bidi-js 1.0.3→1.1.0, entities
+  8.0.0→8.1.0, tldts 7.4.11→7.4.12)
+- app/config/site.ts: comment now references landing-page CTAs instead of manifest.json
+- AGENTS.md, CHECKLIST.md, README.md, SKILL.md: dropped manifest/PWA checklist entries and asset-tree references; README siteConfig note
+  trimmed
