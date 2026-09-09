@@ -1,5 +1,5 @@
 /**
- * Internationalization — single registry.
+ * Internationalization - single registry.
  *
  * Add a locale in two steps: create `./dictionaries/<code>.json` (copying
  * the shape of `en.json`, including `meta.{flag,native}`), then add a

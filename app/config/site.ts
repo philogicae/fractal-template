@@ -1,7 +1,7 @@
 /**
- * Site-wide configuration — single source of truth for brand, links,
+ * Site-wide configuration - single source of truth for brand, links,
  * and navigation. Update values here instead of hunting through
- * `layout.tsx`, `Navbar.tsx`, `Footer.tsx`, `page.tsx`, and `manifest.json`.
+ * `layout.tsx`, `Navbar.tsx`, `Footer.tsx`, `page.tsx`, and landing-page CTAs.
  */
 
 /**

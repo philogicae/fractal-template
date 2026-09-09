@@ -11,7 +11,7 @@ import { ThemeProvider } from "next-themes"
  *   pre-hydration script to prevent FOUC. HeroUI v3 reads theme via the
  *   same class, so no dedicated provider is needed.
  * - `LocaleProvider` exposes `{ locale, dict, setLocale }` via context to
- *   every Client Component — no URL segment, no prop drilling.
+ *   every Client Component - no URL segment, no prop drilling.
  *
  * See https://beta.heroui.com/docs/customization/dark-mode
  */

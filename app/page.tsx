@@ -81,7 +81,7 @@ const features = [
 
 /**
  * Landing page with CSS-animated hero and feature grid.
- * Server Component — reads the dictionary for the active locale.
+ * Server Component - reads the dictionary for the active locale.
  */
 export default async function LandingPage(): Promise<React.ReactElement> {
   const { dict } = await getCurrentDictionary()

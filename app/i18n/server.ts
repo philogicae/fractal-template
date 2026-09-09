@@ -8,7 +8,7 @@ import {
 } from "./config"
 import { getLocaleFromAcceptLanguage } from "./get-locale"
 
-/** Conventional cookie name — proxies / CDNs can vary cache on it. */
+/** Conventional cookie name - proxies / CDNs can vary cache on it. */
 export const LOCALE_COOKIE = "NEXT_LOCALE"
 
 /** Resolve locale: `NEXT_LOCALE` cookie → `Accept-Language` → default. */

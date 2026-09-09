@@ -23,7 +23,7 @@ const LocaleContext = createContext<LocaleContextValue | null>(null)
 /**
  * Bridges the server-resolved `{ locale, dict }` into client components.
  * `setLocale` persists the choice (Server Action) then refreshes RSCs so
- * the whole tree re-renders with the new dictionary — no page reload.
+ * the whole tree re-renders with the new dictionary - no page reload.
  */
 export function LocaleProvider({
   locale,

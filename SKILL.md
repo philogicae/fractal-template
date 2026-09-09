@@ -19,7 +19,7 @@ metadata:
     - Biome
   features:
     - App Router + React Server Components
-    - Internationalization via a server-resolved locale (`NEXT_LOCALE` cookie + `Accept-Language`) and a client `LocaleProvider` — **no `[lang]` URL segment**. Ships with 12 locales (`en`, `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`); delete the ones you don't need when customizing, add more only when needed. **All user-visible text must use i18n** — no hardcoded strings in components
+    - Internationalization via a server-resolved locale (`NEXT_LOCALE` cookie + `Accept-Language`) and a client `LocaleProvider` - **no `[lang]` URL segment**. Ships with 12 locales (`en`, `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`); delete the ones you don't need when customizing, add more only when needed. **All user-visible text must use i18n** - no hardcoded strings in components
     - Dark mode via `next-themes` with FOUC prevention (theme-aware html background)
     - Mobile-first responsive layout
     - Error boundary, loading (Skeleton-based) and 404 pages
@@ -27,10 +27,10 @@ metadata:
     - Security headers, AVIF/WebP image optimization with strict SVG CSP
     - Site-wide config at `app/config/site.ts` as single source of truth
     - Multi-stage Dockerfile with Next.js standalone output
-    - Pre-configured design system with dark/light modes — see [`DESIGN.md`](./DESIGN.md) for complete reference
+    - Pre-configured design system with dark/light modes - see [`DESIGN.md`](./DESIGN.md) for complete reference
 ---
 
-# Fractal Template — Bootstrap Skill
+# Fractal Template - Bootstrap Skill
 
 > **Audience.** AI agents spinning up a **new project** from `philogicae/fractal-template`. This document is self-contained: it covers both the bootstrap steps and the conventions the agent needs to customize the repo correctly.
 
@@ -52,14 +52,14 @@ Requirements: **Node.js 26+**, **pnpm 11+**, modern browser.
 <project-name>/
 ├── app/
 │   ├── api/
-│   │   └── hello/               # DEMO endpoint — delete or replace
-│   ├── skill.md/                # Route that serves SKILL.md raw — KEEP
-│   ├── components/              # Shared UI (no barrel — import per file)
+│   │   └── hello/               # DEMO endpoint - delete or replace
+│   ├── skill.md/                # Route that serves SKILL.md raw - KEEP
+│   ├── components/              # Shared UI (no barrel - import per file)
 │   │   ├── Container.tsx        # Keep (generic width wrapper)
-│   │   ├── FeatureCard.tsx      # DEMO — delete if unused
+│   │   ├── FeatureCard.tsx      # DEMO - delete if unused
 │   │   ├── LanguageSwitcher.tsx # Keep (locale dropdown)
 │   │   ├── Skeleton.tsx         # Keep (themed pulse placeholder)
-│   │   ├── StatusBadge.tsx      # DEMO — delete if unused
+│   │   ├── StatusBadge.tsx      # DEMO - delete if unused
 │   │   └── ThemeToggle.tsx      # Keep (uses next-themes)
 │   ├── config/                  # Site-wide config (single source of truth)
 │   │   └── site.ts              # Name, description, nav (labelKey), socials, theme colors
@@ -72,30 +72,30 @@ Requirements: **Node.js 26+**, **pnpm 11+**, modern browser.
 │   │   ├── server.ts            # getCurrentLocale(), getCurrentDictionary()
 │   │   ├── actions.ts           # setLocaleAction Server Action (NEXT_LOCALE cookie)
 │   │   └── LocaleProvider.tsx   # Client context: useLocale(), useDict()
-│   ├── layout/                  # Navbar.tsx (with LanguageSwitcher), Footer.tsx — driven by `@config/site`
-│   ├── stores/                  # Zustand (no barrel — import per file)
-│   │   └── counter.ts           # DEMO — delete
+│   ├── layout/                  # Navbar.tsx (with LanguageSwitcher), Footer.tsx - driven by `@config/site`
+│   ├── stores/                  # Zustand (no barrel - import per file)
+│   │   └── counter.ts           # DEMO - delete
 │   ├── test/                    # Test harness (Vitest)
 │   │   ├── react.tsx            # act/createRoot harness (no testing-library)
 │   │   └── stubs/
 │   │       └── server-only.ts   # Stub for the `server-only` package in tests
-│   ├── utils/                   # cn(), debounce, media-query, click-outside — Keep
-│   ├── playground/              # DEMO page — DELETE
-│   ├── globals.css              # Design tokens — CUSTOMIZE
-│   ├── layout.tsx               # Root layout + metadata — CUSTOMIZE
-│   ├── providers.tsx            # Client providers (next-themes + LocaleProvider) — Keep
-│   ├── page.tsx                 # Landing page — REPLACE
+│   ├── utils/                   # cn(), debounce, media-query, click-outside - Keep
+│   ├── playground/              # DEMO page - DELETE
+│   ├── globals.css              # Design tokens - CUSTOMIZE
+│   ├── layout.tsx               # Root layout + metadata - CUSTOMIZE
+│   ├── providers.tsx            # Client providers (next-themes + LocaleProvider) - Keep
+│   ├── page.tsx                 # Landing page - REPLACE
 │   ├── error.tsx / loading.tsx / not-found.tsx   # Keep, restyle
-├── public/                      # favicon, logo, manifest, robots — REPLACE
+├── public/                      # favicon, logo, robots - REPLACE
 ├── .env.example                 # Customize variables
-├── next.config.mjs              # Security headers, image formats — review
+├── next.config.mjs              # Security headers, image formats - review
 ├── biome.json                   # Lint/format config
-├── package.json                 # name/description/repo — CUSTOMIZE
-├── Dockerfile / compose.yaml    # Ready to use — override names/port via .env
+├── package.json                 # name/description/repo - CUSTOMIZE
+├── Dockerfile / compose.yaml    # Ready to use - override names/port via .env
 ├── README.md                    # REWRITE for the new project
-├── AGENTS.md                    # In-repo agent conventions — keep in sync as you modify the project
+├── AGENTS.md                    # In-repo agent conventions - keep in sync as you modify the project
 ├── SKILL.md                     # REWRITE to describe the new app (see §5) or delete if the app needs no agent surface
-├── CHECKLIST.md                 # Tickable bootstrap checklist — delete once every box is ticked
+├── CHECKLIST.md                 # Tickable bootstrap checklist - delete once every box is ticked
 ├── DESIGN.md                    # Complete design system reference
 └── vitest.config.js             # Test runner configuration
                                   # Colocated tests ship as *.test.ts(x) next to the code
@@ -116,7 +116,7 @@ Requirements: **Node.js 26+**, **pnpm 11+**, modern browser.
 
 ## 3. Customization checklist
 
-**Use `CHECKLIST.md` at the repo root — do not work from a list in this
+**Use `CHECKLIST.md` at the repo root - do not work from a list in this
 document.** `CHECKLIST.md` is the single, tickable source of truth for
 every customization step (identity & metadata, public assets, layout /
 chrome, landing page, design tokens, internationalization, demo-code
@@ -134,26 +134,26 @@ support that work. For the task list itself, switch to `CHECKLIST.md`.
 - `app/config/site.ts` is the identity single source of truth; `app/layout.tsx` metadata, `Navbar`, `Footer`, and landing-page CTAs all derive from it.
 - User-visible copy lives in `app/i18n/dictionaries/*.json`, **not** in JSX. The `Dictionary` type is inferred from `en.json`; keep keys in sync across locales or TypeScript fails.
 - **Add a locale:** create `app/i18n/dictionaries/<code>.json` (including `meta.{flag,native}`), then add one static import + one entry in the `dictionaries` map in `app/i18n/config.ts`. **Drop a locale:** delete the JSON and remove its import + map entry. Everything else derives from that map.
-- Nav entries in `app/config/site.ts` carry a `labelKey` — add the matching key to `NavLabelKey` and to `dict.nav` in every locale file when adding / renaming one.
+- Nav entries in `app/config/site.ts` carry a `labelKey` - add the matching key to `NavLabelKey` and to `dict.nav` in every locale file when adding / renaming one.
 - Read the dictionary via `useDict()` (`@i18n/LocaleProvider`) on the client and `getCurrentDictionary()` (`@i18n/server`) on the server. Both resolve the same active locale.
-- `public/images/` ships with template placeholders (`logo.gif`, `apple-touch-icon.png`, `192x192.png`, `512x512.png`, `screenshot.jpeg`); replace each with your own files so the references in `layout.tsx`, `Navbar.tsx`, and `manifest.json` point at your brand.
+- `public/images/` ships with template placeholders (`logo.gif`, `apple-touch-icon.png`, `screenshot.jpeg`); replace each with your own files so the references in `layout.tsx` and `Navbar.tsx` point at your brand.
 
 ## 4. Delete demo-only code
 
 These files exist only to showcase the template. Remove them before writing product code, unless the user explicitly wants them kept:
 
-- `app/playground/` — full directory.
-- `app/api/hello/` — replace with real endpoints or delete.
+- `app/playground/` - full directory.
+- `app/api/hello/` - replace with real endpoints or delete.
 - `app/stores/counter.ts`.
-- `app/components/FeatureCard.tsx`, `app/components/StatusBadge.tsx` (only if not reused). `Skeleton.tsx` is not demo — keep it.
+- `app/components/FeatureCard.tsx`, `app/components/StatusBadge.tsx` (only if not reused). `Skeleton.tsx` is not demo - keep it.
 - The "Try the Playground" / "Read SKILL.md" / "View on GitHub" / "Deploy to Vercel" buttons in `app/page.tsx`.
 - The `/skill.md` and `/playground` entries in `siteConfig.nav` (`app/config/site.ts`).
 
-Keep the `app/skill.md/route.ts` handler — it is the delivery mechanism for the rewritten `SKILL.md` (see §5).
+Keep the `app/skill.md/route.ts` handler - it is the delivery mechanism for the rewritten `SKILL.md` (see §5).
 
-## 5. Rewrite `SKILL.md` for the new project (default) — or delete it
+## 5. Rewrite `SKILL.md` for the new project (default) - or delete it
 
-**Default path.** After customization, **this file must be rewritten** so agents can interact with the shipped application through `/skill.md`. Its new purpose is to describe the app — its routes, API, auth, and how an agent should consume it — not how to install the template.
+**Default path.** After customization, **this file must be rewritten** so agents can interact with the shipped application through `/skill.md`. Its new purpose is to describe the app - its routes, API, auth, and how an agent should consume it - not how to install the template.
 
 **Opt-out.** If the project has no agent-facing surface and the user does not want one, delete instead:
 
@@ -178,13 +178,13 @@ Short description of the product and its primary users.
 
 ## Routes
 
-- `/` — <purpose>
-- `/<route>` — <purpose>
+- `/` - <purpose>
+- `/<route>` - <purpose>
 
 ## API
 
-- `GET /api/<endpoint>` — params, response shape, auth
-- `POST /api/<endpoint>` — body, response shape
+- `GET /api/<endpoint>` - params, response shape, auth
+- `POST /api/<endpoint>` - body, response shape
 
 ## Data model / state
 
@@ -202,7 +202,7 @@ List every required variable with a one-line description.
 - Rate limits, error shapes
 ```
 
-**`AGENTS.md` must be kept in sync throughout customization** — not as a one-shot pass at the end. As soon as you remove the playground / counter store / demo components, drop them from the "Demo code to remove" list; as soon as you add new routes, stores, or env variables, record them in the relevant sections so the next agent reading `AGENTS.md` sees an accurate picture of the project.
+**`AGENTS.md` must be kept in sync throughout customization** - not as a one-shot pass at the end. As soon as you remove the playground / counter store / demo components, drop them from the "Demo code to remove" list; as soon as you add new routes, stores, or env variables, record them in the relevant sections so the next agent reading `AGENTS.md` sees an accurate picture of the project.
 
 ## 6. Sanity checks before handing off
 
@@ -221,7 +221,7 @@ Every match should be intentional.
 
 ---
 
-# Reference — template conventions
+# Reference - template conventions
 
 Quick reference for the conventions baked into the template, needed while customizing.
 
@@ -229,9 +229,9 @@ Quick reference for the conventions baked into the template, needed while custom
 
 **Framework**
 
-- Next.js 16 (App Router, Turbopack) — `next dev --turbo`, `next build --turbo`
-- React 19 — Server Components by default
-- TypeScript strict mode — explicit return types on exports, `interface` for objects, `type` for unions
+- Next.js 16 (App Router, Turbopack) - `next dev --turbo`, `next build --turbo`
+- React 19 - Server Components by default
+- TypeScript strict mode - explicit return types on exports, `interface` for objects, `type` for unions
 
 **Styling**
 
@@ -239,13 +239,13 @@ Quick reference for the conventions baked into the template, needed while custom
 - CSS variables in `app/globals.css` consumed as `bg-(--color-ghost-canvas)`, etc.
 - `cn()` helper from `@utils/tw` for conditional class merging (wraps `clsx` + `tailwind-merge`)
 
-**UI — HeroUI v3**
+**UI - HeroUI v3**
 
 - Button variants: `primary` (default), `secondary`, `tertiary`, `outline`, `ghost`, `danger`, `danger-soft`
 - Button loading prop: `isPending` (not `isLoading`)
 - Card parts: `CardHeader`, `CardContent`, `CardFooter` (no `CardBody`)
 
-**State — Zustand**
+**State - Zustand**
 
 - Global state in `app/stores/`, imported per file (e.g. `@stores/counter`)
 - `persist` middleware available from `zustand/middleware` when you need `localStorage` sync
@@ -261,11 +261,11 @@ Quick reference for the conventions baked into the template, needed while custom
 **File placement**
 
 - Pages: `app/<route>/page.tsx`
-- API routes: `app/api/<endpoint>/route.ts` — export `GET` / `POST` / `PUT` / `DELETE`
-- Shared components: `app/components/` — import per file (e.g. `@components/Container`)
+- API routes: `app/api/<endpoint>/route.ts` - export `GET` / `POST` / `PUT` / `DELETE`
+- Shared components: `app/components/` - import per file (e.g. `@components/Container`)
 - Layout parts: `app/layout/`
 - Config: `app/config/site.ts` (site-wide constants)
-- Zustand stores: `app/stores/` — import per file (e.g. `@stores/counter`)
+- Zustand stores: `app/stores/` - import per file (e.g. `@stores/counter`)
 - Utilities: `app/utils/`
 
 **Naming**
@@ -278,7 +278,7 @@ Quick reference for the conventions baked into the template, needed while custom
 
 - Default to Server Components.
 - Add `"use client"` only when a file needs hooks, browser APIs, or event handlers.
-- Keep the client boundary small — extract the interactive part into its own component.
+- Keep the client boundary small - extract the interactive part into its own component.
 
 **Imports**
 
@@ -334,10 +334,10 @@ export const useMyStore = create<State>()((set) => ({
 ```ts
 import { useCounterStore } from "@stores/counter";
 
-// Good — re-renders only when `count` changes
+// Good - re-renders only when `count` changes
 const count = useCounterStore((s) => s.count);
 
-// Bad — re-renders on any state change
+// Bad - re-renders on any state change
 const { count } = useCounterStore();
 ```
 
@@ -367,7 +367,7 @@ CSS variables (`app/globals.css`):
 
 See [`DESIGN.md`](./DESIGN.md) for the complete design reference including the color palette, typography, elevation, and component tokens.
 
-> **Important:** `DESIGN.md` and `app/globals.css` must always stay synchronized. When you modify any design token in `globals.css`, update the corresponding section in `DESIGN.md` immediately. These are twin source-of-truth files — the CSS is the implementation, the markdown is the documentation.
+> **Important:** `DESIGN.md` and `app/globals.css` must always stay synchronized. When you modify any design token in `globals.css`, update the corresponding section in `DESIGN.md` immediately. These are twin source-of-truth files - the CSS is the implementation, the markdown is the documentation.
 
 **Looking for design inspiration?** Browse curated design templates at [styles.refero.design](https://styles.refero.design/).
 
@@ -386,7 +386,7 @@ Dark mode:
 - `ThemeProvider` injects its own pre-hydration script, toggles the `dark` class on `<html>`, and persists the choice to `localStorage` (`theme` key).
 - `ThemeToggle` (`app/components/ThemeToggle.tsx`) reads `resolvedTheme` and calls `setTheme("light"|"dark")`.
 - `html` / `html.dark` background colors in `globals.css` match the first paint so neither mode flashes.
-- Dark is always the default — `prefers-color-scheme` is never consulted; the ThemeToggle choice persists in `localStorage` (`theme` key).
+- Dark is always the default - `prefers-color-scheme` is never consulted; the ThemeToggle choice persists in `localStorage` (`theme` key).
 
 ## Utilities
 
@@ -401,19 +401,19 @@ import {
 import { useClickOutside } from "@utils/click-outside";
 ```
 
-- `cn(...classes)` — Tailwind-aware class merge.
-- `useMediaQuery("(max-width: 768px)")`, `useBreakpoint("md")` — `sm | md | lg | xl | 2xl`.
-- `useDebounce(value, ms)` — debounced value.
-- `useDebouncedCallback(fn, ms)` — debounced callback.
-- `useDebounceState(initial, ms)` — returns `[value, debouncedValue, setValue]`.
-- `useClickOutside(isOpen, elementId, onClose)` — closes dropdowns/menus when clicking outside the specified element.
+- `cn(...classes)` - Tailwind-aware class merge.
+- `useMediaQuery("(max-width: 768px)")`, `useBreakpoint("md")` - `sm | md | lg | xl | 2xl`.
+- `useDebounce(value, ms)` - debounced value.
+- `useDebouncedCallback(fn, ms)` - debounced callback.
+- `useDebounceState(initial, ms)` - returns `[value, debouncedValue, setValue]`.
+- `useClickOutside(isOpen, elementId, onClose)` - closes dropdowns/menus when clicking outside the specified element.
 
 ## Performance notes
 
 - Default to Server Components; keep `"use client"` boundaries small.
 - Reach for `memo()` / `useCallback` / `useMemo` only when profiling shows a real re-render cost. Do not wrap zero-prop or stable-prop components in `memo()`.
 - Always select Zustand state with a selector.
-- `next.config.mjs` enables `output: "standalone"`, `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, compression, long-term caching for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set — add one if your app needs it.
+- `next.config.mjs` enables `output: "standalone"`, `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, compression, long-term caching for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set - add one if your app needs it.
 - CI/CD runs on every push (`lint` → `build` → `test`) via `.github/workflows/ci-cd.yml`.
 
 ## Scripts
@@ -440,4 +440,4 @@ pnpm repomix  # Markdown snapshot of the codebase for agents
 - [Biome](https://biomejs.dev/)
 - [AGENTS.md standard](https://agents.md/)
 - [Agent Skill spec](https://agentskills.io/specification)
-- [DESIGN.md](./DESIGN.md) — Complete design system reference
+- [DESIGN.md](./DESIGN.md) - Complete design system reference

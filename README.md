@@ -10,23 +10,23 @@ A modern Next.js template with HeroUI, Tailwind CSS, and TypeScript.
 
 ## Features
 
-- **Next.js 16** — App Router with React Server Components
-- **React 19** — Latest React features and improvements
-- **TypeScript** — Full type safety with strict configuration
-- **Tailwind CSS 4** — Utility-first styling with CSS variables
-- **HeroUI v3** — Beautiful, accessible UI components
-- **Zustand** — Lightweight state management with persistence
-- **Dark Mode** — `next-themes` with `localStorage` persistence, dark by default (light mode one toggle away), and FOUC prevention (see [`DESIGN.md`](./DESIGN.md))
-- **Biome** — Fast linting and code formatting
-- **Mobile-first** — Fully responsive layout
-- **Path Aliases** — Clean per-file imports with `@components/*`, `@config/*`, `@layout/*`, `@stores/*`, `@utils/*`
-- **Site config** — Brand, nav, and socials centralized in `app/config/site.ts`
-- **Built-in UX pages** — `error.tsx` boundary, `loading.tsx` skeletons, `not-found.tsx` 404
-- **Utility hooks** — `useDebounce`, `useDebouncedCallback`, `useDebounceState`, `useMediaQuery`, `useBreakpoint`
-- **Reduced-motion aware** — `prefers-reduced-motion` handled globally in `globals.css`
-- **Production-ready** — Multi-stage `Dockerfile` with `output: "standalone"`, GitHub Actions CI/CD, 6 security headers, AVIF/WebP images (with strict CSP), long-term static caching
-- **Agent-ready** — [`AGENTS.md`](./AGENTS.md), [`SKILL.md`](./SKILL.md), [`DESIGN.md`](./DESIGN.md), [`CHECKLIST.md`](./CHECKLIST.md), and a `/skill.md` route for dynamic agent discovery
-- **Internationalization** — server-resolved locale (cookie + `Accept-Language`) with a typed JSON-dictionary system, a client `LocaleProvider`, and a navbar `LanguageSwitcher`. Ships with **12 locales** (`en`, `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`); delete the ones you don't need when customizing, add more only when needed — no `[lang]` URL segment. **All user-visible text must use i18n** — no hardcoded strings in components
+- **Next.js 16** - App Router with React Server Components
+- **React 19** - Latest React features and improvements
+- **TypeScript** - Full type safety with strict configuration
+- **Tailwind CSS 4** - Utility-first styling with CSS variables
+- **HeroUI v3** - Beautiful, accessible UI components
+- **Zustand** - Lightweight state management with persistence
+- **Dark Mode** - `next-themes` with `localStorage` persistence, dark by default (light mode one toggle away), and FOUC prevention (see [`DESIGN.md`](./DESIGN.md))
+- **Biome** - Fast linting and code formatting
+- **Mobile-first** - Fully responsive layout
+- **Path Aliases** - Clean per-file imports with `@components/*`, `@config/*`, `@layout/*`, `@stores/*`, `@utils/*`
+- **Site config** - Brand, nav, and socials centralized in `app/config/site.ts`
+- **Built-in UX pages** - `error.tsx` boundary, `loading.tsx` skeletons, `not-found.tsx` 404
+- **Utility hooks** - `useDebounce`, `useDebouncedCallback`, `useDebounceState`, `useMediaQuery`, `useBreakpoint`
+- **Reduced-motion aware** - `prefers-reduced-motion` handled globally in `globals.css`
+- **Production-ready** - Multi-stage `Dockerfile` with `output: "standalone"`, GitHub Actions CI/CD, 6 security headers, AVIF/WebP images (with strict CSP), long-term static caching
+- **Agent-ready** - [`AGENTS.md`](./AGENTS.md), [`SKILL.md`](./SKILL.md), [`DESIGN.md`](./DESIGN.md), [`CHECKLIST.md`](./CHECKLIST.md), and a `/skill.md` route for dynamic agent discovery
+- **Internationalization** - server-resolved locale (cookie + `Accept-Language`) with a typed JSON-dictionary system, a client `LocaleProvider`, and a navbar `LanguageSwitcher`. Ships with **12 locales** (`en`, `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`); delete the ones you don't need when customizing, add more only when needed - no `[lang]` URL segment. **All user-visible text must use i18n** - no hardcoded strings in components
 
 ## Getting Started
 
@@ -48,16 +48,16 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Available Scripts
 
-- `pnpm dev` — Start development server with Turbo
-- `pnpm build` — Build for production
-- `pnpm start` — Start production server
-- `pnpm lint` — Run Biome linter and formatter (auto-fix)
-- `pnpm test` — Run Vitest
-- `pnpm test:watch` — Run Vitest in watch mode
-- `pnpm test:ui` — Run Vitest with browser UI
-- `pnpm upgrade` — Update all dependencies
-- `pnpm clean` — Clean build artifacts and reinstall
-- `pnpm repomix` — Generate codebase summary for AI agents (markdown)
+- `pnpm dev` - Start development server with Turbo
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run Biome linter and formatter (auto-fix)
+- `pnpm test` - Run Vitest
+- `pnpm test:watch` - Run Vitest in watch mode
+- `pnpm test:ui` - Run Vitest with browser UI
+- `pnpm upgrade` - Update all dependencies
+- `pnpm clean` - Clean build artifacts and reinstall
+- `pnpm repomix` - Generate codebase summary for AI agents (markdown)
 
 ## Project Structure
 
@@ -119,11 +119,8 @@ public/                    # Static assets
 ├── images/
 │   ├── logo.gif
 │   ├── apple-touch-icon.png
-│   ├── 192x192.png
-│   ├── 512x512.png
 │   └── screenshot.jpeg
 ├── favicon.ico
-├── manifest.json
 └── robots.txt
 
 SKILL.md                   # Agent Skill definition (served at /skill.md)
@@ -137,9 +134,9 @@ pnpm-workspace.yaml        # pnpm workspace config (engine-strict, lockfile sett
 
 This project includes AI agent configuration files:
 
-- **AGENTS.md** — conventions for an agent working inside an already-cloned repo: customization checklist, code style, and architecture guidance. Meant to be kept in sync as the project evolves.
-- **SKILL.md** — bootstrap skill for an agent starting a **new** project from this template: clone, folder tour, customize / delete checklist, and the conventions it needs to do that correctly. Once the project ships, this file should be rewritten to describe the new app (routes, API, env) — or deleted if there is no agent-facing surface.
-- **CHECKLIST.md** — structured, tickable bootstrap checklist that mirrors the customization / delete / sanity-check steps from `AGENTS.md` and `SKILL.md`. Agents should tick boxes as they go so the next session sees exactly what is left. Delete it once every box is ticked.
+- **AGENTS.md** - conventions for an agent working inside an already-cloned repo: customization checklist, code style, and architecture guidance. Meant to be kept in sync as the project evolves.
+- **SKILL.md** - bootstrap skill for an agent starting a **new** project from this template: clone, folder tour, customize / delete checklist, and the conventions it needs to do that correctly. Once the project ships, this file should be rewritten to describe the new app (routes, API, env) - or deleted if there is no agent-facing surface.
+- **CHECKLIST.md** - structured, tickable bootstrap checklist that mirrors the customization / delete / sanity-check steps from `AGENTS.md` and `SKILL.md`. Agents should tick boxes as they go so the next session sees exactly what is left. Delete it once every box is ticked.
 
 Usable with (and beyond): [Claude Code](https://claude.ai/code), [Cursor](https://www.cursor.com/), [Windsurf](https://windsurf.com/), [OpenClaw](https://openclaw.ai/), [Hermes](https://hermes-agent.nousresearch.com/)
 
@@ -171,31 +168,31 @@ Visit the [live demo](https://fractal-template.binaryeyelabs.xyz) to see the tem
 
 ### Docker
 
-A multi-stage `Dockerfile` (`base` → `deps` → `builder` → slim `runner`) and `compose.yaml` are included. The `runner` stage serves the Next.js standalone bundle (`node server.js`) as a non-root user with a `HEALTHCHECK`. Base image: [`platformatic/node-caged:26-alpine`](https://hub.docker.com/r/platformatic/node-caged) — Node.js with V8 pointer compression enabled (~50% memory reduction for pointer-heavy workloads).
+A multi-stage `Dockerfile` (`base` → `deps` → `builder` → slim `runner`) and `compose.yaml` are included. The `runner` stage serves the Next.js standalone bundle (`node server.js`) as a non-root user with a `HEALTHCHECK`. Base image: [`platformatic/node-caged:26-alpine`](https://hub.docker.com/r/platformatic/node-caged) - Node.js with V8 pointer compression enabled (~50% memory reduction for pointer-heavy workloads).
 
 ```bash
 docker compose up --build       # Build and run on :3000
 ```
 
-`compose.yaml` sets `NODE_ENV=production` and optionally loads a local `.env` file. Two variables are configurable via `.env`: `DOCKER_PROJECT_NAME` (compose project name, reused for the container and image names) and `DOCKER_PORT` (host port) — defaults fall back to `fractal-template` / `3000`.
+`compose.yaml` sets `NODE_ENV=production` and optionally loads a local `.env` file. Two variables are configurable via `.env`: `DOCKER_PROJECT_NAME` (compose project name, reused for the container and image names) and `DOCKER_PORT` (host port) - defaults fall back to `fractal-template` / `3000`.
 
 ### GitHub Actions
 
-`.github/workflows/ci-cd.yml` ships ready to use — no edits needed.
+`.github/workflows/ci-cd.yml` ships ready to use - no edits needed.
 
 ### Production hardening (built-in, via `next.config.mjs`)
 
-- **Security headers** — HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy. No page-level CSP is set — add one if your app needs it.
-- **Image optimization** — AVIF/WebP formats, 24h minimum cache TTL, remote patterns over HTTPS, strict `contentSecurityPolicy` on image responses to neutralize SVG XSS.
-- **Standalone output** — `output: "standalone"` in `next.config.mjs` produces a minimal production server bundle for slim Docker images.
-- **Long-term caching** — 1 week for `/images`, `/fonts`, and `/_next/static` (Next.js content-hashed URLs make this safe).
-- **Package import optimization** — `@heroui/react`, `@heroui/styles` tree-shaken via `experimental.optimizePackageImports`.
-- **Compression** — enabled by default; `x-powered-by` header stripped.
+- **Security headers** - HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy. No page-level CSP is set - add one if your app needs it.
+- **Image optimization** - AVIF/WebP formats, 24h minimum cache TTL, remote patterns over HTTPS, strict `contentSecurityPolicy` on image responses to neutralize SVG XSS.
+- **Standalone output** - `output: "standalone"` in `next.config.mjs` produces a minimal production server bundle for slim Docker images.
+- **Long-term caching** - 1 week for `/images`, `/fonts`, and `/_next/static` (Next.js content-hashed URLs make this safe).
+- **Package import optimization** - `@heroui/react`, `@heroui/styles` tree-shaken via `experimental.optimizePackageImports`.
+- **Compression** - enabled by default; `x-powered-by` header stripped.
 
 ### Environment variables
 
-- `CF_WEB_ANALYTICS_TOKEN` — optional. When set, the Cloudflare Web Analytics beacon is injected in `app/layout.tsx`; omit it to disable the beacon.
-- `VERCEL_ANALYTICS_ID` — injected automatically by Vercel. `app/layout.tsx` gates both Vercel `Analytics` and `SpeedInsights` on `process.env.VERCEL`, so they render only on Vercel deployments.
+- `CF_WEB_ANALYTICS_TOKEN` - optional. When set, the Cloudflare Web Analytics beacon is injected in `app/layout.tsx`; omit it to disable the beacon.
+- `VERCEL_ANALYTICS_ID` - injected automatically by Vercel. `app/layout.tsx` gates both Vercel `Analytics` and `SpeedInsights` on `process.env.VERCEL`, so they render only on Vercel deployments.
 
 See [`.env.example`](./.env.example) for the full annotated list.
 
@@ -205,7 +202,7 @@ See [`.env.example`](./.env.example) for the full annotated list.
 
 Edit `app/globals.css` to customize colors, spacing, and layout vars. See [`DESIGN.md`](./DESIGN.md) for the complete reference:
 
-> **Note:** These files must stay synchronized — `globals.css` is the implementation, `DESIGN.md` is the documentation. When you modify tokens in one, update the other immediately.
+> **Note:** These files must stay synchronized - `globals.css` is the implementation, `DESIGN.md` is the documentation. When you modify tokens in one, update the other immediately.
 
 ```css
 :root {
@@ -280,7 +277,7 @@ import { ThemeToggle } from "@components/ThemeToggle";
 
 ### Site Config
 
-Edit `app/config/site.ts` — it is the **single source of truth** for brand name, description, keywords, URL, theme colors, nav links, and socials. `app/layout.tsx` metadata, `Navbar`, `Footer`, `manifest.json`-facing values, and landing-page CTAs all derive from it.
+Edit `app/config/site.ts` - it is the **single source of truth** for brand name, description, keywords, URL, theme colors, nav links, and socials. `app/layout.tsx` metadata, `Navbar`, `Footer`, and landing-page CTAs all derive from it.
 
 ```ts
 import { siteConfig } from "@config/site";
@@ -304,10 +301,10 @@ import {
 import { useClickOutside } from "@utils/click-outside";
 ```
 
-- `cn(...)` — Tailwind-aware class merge (clsx + tailwind-merge).
-- `useMediaQuery("(max-width: 768px)")`, `useBreakpoint("md")` — `sm | md | lg | xl | 2xl`.
+- `cn(...)` - Tailwind-aware class merge (clsx + tailwind-merge).
+- `useMediaQuery("(max-width: 768px)")`, `useBreakpoint("md")` - `sm | md | lg | xl | 2xl`.
 - `useDebounce(value, ms)` / `useDebouncedCallback(fn, ms)` / `useDebounceState(initial, ms)`.
-- `useClickOutside(isOpen, elementId, onClose)` — closes dropdowns/menus when clicking outside the specified element.
+- `useClickOutside(isOpen, elementId, onClose)` - closes dropdowns/menus when clicking outside the specified element.
 
 ### HeroUI Button Variants
 
@@ -317,7 +314,7 @@ Card parts: `CardHeader`, `CardContent`, `CardFooter` (no `CardBody`). Button lo
 
 ### Internationalization
 
-The template ships with a **provider-based** i18n layer — no `[lang]` URL segment, no `middleware.ts`, no full-page reload on locale change.
+The template ships with a **provider-based** i18n layer - no `[lang]` URL segment, no `middleware.ts`, no full-page reload on locale change.
 
 **Flow.** The root layout (`app/layout.tsx`) resolves the active locale server-side via `getCurrentDictionary()` (`app/i18n/server.ts`): cookie `NEXT_LOCALE` → `Accept-Language` header → `defaultLocale`. It then loads the matching JSON dictionary and injects both into the `<Providers>` tree (`app/providers.tsx`). A client `LocaleProvider` (`app/i18n/LocaleProvider.tsx`) exposes them via `useLocale()` / `useDict()`. The `LanguageSwitcher` calls the `setLocaleAction` Server Action to persist the cookie and then `router.refresh()` inside a transition so every Server Component re-renders with the new dictionary.
 
@@ -331,7 +328,7 @@ import { getCurrentDictionary } from "@i18n/server";
 const { dict, locale } = await getCurrentDictionary();
 ```
 
-**Supported locales** (see `app/i18n/config.ts`): `en` (default), `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`. Delete extra locale files when customizing; add more only when needed. **All user-visible text must use i18n** — in Server Components use `const { dict } = await getCurrentDictionary()`, in Client Components use `const dict = useDict()`.
+**Supported locales** (see `app/i18n/config.ts`): `en` (default), `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`. Delete extra locale files when customizing; add more only when needed. **All user-visible text must use i18n** - in Server Components use `const { dict } = await getCurrentDictionary()`, in Client Components use `const dict = useDict()`.
 
 Site-wide nav entries in `app/config/site.ts` carry a `labelKey` (not a literal label); the `Navbar` resolves it against `dict.nav`, which guarantees translation coverage at the type level.
 
@@ -343,7 +340,7 @@ Visit `/playground` to test the API endpoints and Zustand state management:
 - GET request to `/skill.md` (returns raw SKILL.md content)
 - Zustand counter demo (increment, decrement, +5, reset, undo)
 
-> The `/playground` page, `/api/hello` route, the counter store, and `FeatureCard` / `StatusBadge` components are included as examples only. When starting a new project from this template, remove them — see `SKILL.md` and `AGENTS.md` for the full customization checklist.
+> The `/playground` page, `/api/hello` route, the counter store, and `FeatureCard` / `StatusBadge` components are included as examples only. When starting a new project from this template, remove them - see `SKILL.md` and `AGENTS.md` for the full customization checklist.
 
 ## License
 

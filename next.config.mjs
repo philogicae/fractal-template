@@ -39,7 +39,7 @@ const nextConfig = {
   // Next 16.3.1 standalone tracing drops @swc/helpers' esm/ dir, crashing boot
   // with MODULE_NOT_FOUND for esm/_interop_require_default.js. Keeping it
   // external forces the full package into the standalone output. Harmless on
-  // earlier 16.x — add before any next bump past 16.3.0.
+  // earlier 16.x - add before any next bump past 16.3.0.
   serverExternalPackages: ["@swc/helpers"],
 
   // Experimental features for performance

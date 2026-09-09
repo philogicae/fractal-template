@@ -1,7 +1,7 @@
 import { cn } from "@utils/tw"
 
 /**
- * Skeleton placeholder — a themed pulsing block used while content loads.
+ * Skeleton placeholder - a themed pulsing block used while content loads.
  *
  * @example
  * <Skeleton className="h-6 w-40" />

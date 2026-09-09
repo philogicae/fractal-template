@@ -37,7 +37,6 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  manifest: "/manifest.json",
   title: siteConfig.name,
   description: siteConfig.description,
   applicationName: siteConfig.name,
@@ -96,7 +95,7 @@ export default async function RootLayout({
   const { locale, dict } = await getCurrentDictionary()
   const cfWebAnalyticsToken = process.env.CF_WEB_ANALYTICS_TOKEN
   // Computed on the server so the prerendered markup and the hydrated
-  // client agree — a client-side `new Date().getFullYear()` bakes the
+  // client agree - a client-side `new Date().getFullYear()` bakes the
   // build-time year into static HTML and can mismatch across New Year.
   const year = new Date().getFullYear()
   return (
@@ -108,14 +107,14 @@ export default async function RootLayout({
       <head>
         {/*
          * Opt out of Dark Reader / Night Eye / Midnight Lizard style
-         * extensions — this site ships its own dark mode. Without this they
+         * extensions - this site ships its own dark mode. Without this they
          * re-color every element (cyan becomes yellow, text-transparent
          * gradients break, Logo classes get rewritten causing hydration
          * mismatches).
          * See https://github.com/darkreader/darkreader#how-to-exclude-a-website
          */}
         <meta name="darkreader-lock" />
-        {/* Cloudflare Web Analytics — enabled per instance via CF_WEB_ANALYTICS_TOKEN
+        {/* Cloudflare Web Analytics - enabled per instance via CF_WEB_ANALYTICS_TOKEN
         (omit the var to disable); posts RUM data to /cdn-cgi/rum. */}
         {cfWebAnalyticsToken && (
           <script

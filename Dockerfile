@@ -1,6 +1,6 @@
 # ------------------------------------------------------------
 # Multi-stage build for the Next.js app.
-# Base image: platformatic/node-caged:26-alpine — Node.js with
+# Base image: platformatic/node-caged:26-alpine - Node.js with
 # V8 pointer compression enabled (~50% memory reduction for
 # pointer-heavy workloads). See https://hub.docker.com/r/platformatic/node-caged
 #

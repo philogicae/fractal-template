@@ -751,7 +751,7 @@ const getSkillContent = unstable_cache(
 /**
  * Cached full-page renderer. Parsing the markdown, minifying the CSS with
  * csso and mangling the inline JS with terser on every request is wasted
- * work — the output depends only on the file content, so cache it for the
+ * work - the output depends only on the file content, so cache it for the
  * same TTL and under the same tag as the source read.
  */
 const getRenderedHtml = unstable_cache(

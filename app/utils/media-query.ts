@@ -31,7 +31,7 @@ export function useMediaQuery(query: string): boolean {
     [query]
   )
 
-  // Server snapshot: conservatively `false` — components should not render
+  // Server snapshot: conservatively `false` - components should not render
   // breakpoint-dependent markup on the server.
   return useSyncExternalStore(subscribe, getSnapshot, () => false)
 }

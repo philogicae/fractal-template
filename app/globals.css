@@ -491,7 +491,7 @@ footer::after {
   -webkit-text-fill-color: transparent;
 }
 
-/* Heading accent gradient — uses semantic gradient colors */
+/* Heading accent gradient - uses semantic gradient colors */
 .heading-accent-gradient {
   background: linear-gradient(
     90deg,
