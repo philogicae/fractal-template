@@ -97,6 +97,7 @@ pnpm build    # Production build
 pnpm start    # Production server
 pnpm lint     # Biome check + auto-fix
 pnpm test     # Vitest run
+pnpm test:coverage # Vitest run with coverage (100% thresholds)
 pnpm test:watch # Vitest watch mode
 pnpm test:ui  # Vitest UI
 pnpm upgrade  # pnpm update && pnpm prune
@@ -205,12 +206,15 @@ export function Example(): React.ReactElement {
 
 ## Testing instructions
 
-- Runner: Vitest (`pnpm test`), jsdom environment, path aliases resolved in `vitest.config.js`. Tests live next to the code as `*.test.ts(x)`.
-- Covered today: i18n registry integrity (key parity across all locale dictionaries, nav `labelKey` contract), server locale-resolution priority (`NEXT_LOCALE` cookie → `Accept-Language` → default), `useClickOutside` dismissal contract (outside/panel/trigger/Escape/unmount), debounce hooks (fake timers), `useMediaQuery` (stubbed `matchMedia`), `cn()` merge behavior, the counter store (`app/stores/counter.test.ts`), and both route handlers (`/api/hello` echo + 400, `/skill.md` content-negotiation matrix + version sync).
-- React hook tests use the tiny `act`/`createRoot` helpers in `app/test/react.tsx` - no `@testing-library` dependency.
-- `server-only` is aliased to `app/test/stubs/server-only.ts` in `vitest.config.js` (Next aliases it internally; it is not an installable dependency). Note the vitest aliases use directory-style keys (`"@components": resolve(..., "app/components")` - no `/*`), unlike the pattern aliases in `tsconfig.json`.
+- Runner: Vitest (`pnpm test`; `pnpm test:coverage` for the coverage gate), jsdom environment, path aliases resolved from `tsconfig.json` via `resolve.tsconfigPaths` in `vitest.config.js`. Tests live next to the code as `*.test.ts(x)`.
+- Coverage is enforced at **100%** (statements, branches, functions, lines) with `all: true` in `vitest.config.js`; CI runs `pnpm test:coverage`, so an untested file or branch fails the build. Relax the thresholds when adding code that cannot be meaningfully unit-tested.
+- In CI the coverage table is also published to the GitHub Actions job summary by `.github/scripts/coverage-summary.mjs` (it reads the `json-summary` report, which is only emitted when `process.env.CI` is set so local runs stay file-free).
+- Covered today: the i18n layer (registry key parity, `Accept-Language` resolution, provider context + Server Action cookie, dictionaries), all shared components (`Container`, `Skeleton`, `FeatureCard`, `StatusBadge`, `ThemeToggle`, `LanguageSwitcher`), layout chrome (`Navbar`, `Footer`, root `layout.tsx` metadata/viewport/branches, `Providers`), every page (`/`, `/playground`, 404, loading, error boundary, sitemap), the utilities and counter store (`cn`, debounce, media query, click-outside), and both route handlers (`/api/hello` echo + 400; `/skill.md` negotiation matrix, rendering, and error paths).
+- Render tests use the tiny `act`/`createRoot` helpers in `app/test/react.tsx` (`renderProbe`) plus `withLocale`/`renderWithLocale` from `app/test/render.tsx`, which mounts inside a real `LocaleProvider` - no `@testing-library` dependency. Test files mock the Next pieces they need (`next/navigation`, `next/link`, `next/image`, `next/font/google`, `next/headers`) and `@i18n/actions` when a test triggers a locale change.
+- `server-only` is aliased to `app/test/stubs/server-only.ts` in `vitest.config.js` (Next aliases it internally; it is not an installable dependency).
 - `vitest.config.js` sets `passWithNoTests: true`, so an empty suite doesn't fail CI.
-- When adding a utility, hook, or route handler, add a unit test defending its observable contract. Component interactions are verified in the browser, not in unit tests.
+- Keep Vitest's `isolate` option at its default (`true`). Disabling isolation shares the module graph between test files, so mock identities can leak across files and cause rare, order-dependent failures.
+- When adding a utility, hook, route handler, component, or page, add a test defending its observable contract. Visual polish is still verified in the browser; behavior is covered in jsdom.
 
 ## Project structure (template baseline)
 
@@ -228,6 +232,7 @@ app/
 │   └── StatusBadge.tsx   #   DEMO: status indicator - delete if unused (consumed by playground)
 ├── test/                   # Test harness (colocated *.test.ts(x) files live next to the code they cover)
 │   ├── react.tsx           #   Tiny act/createRoot harness - no @testing-library dependency
+│   ├── render.tsx          #   withLocale()/renderWithLocale() LocaleProvider wrappers
 │   └── stubs/
 │       └── server-only.ts  #   server-only stub aliased in vitest.config.js
 ├── config/               # Site-wide config (site.ts) - edit here, not in layout/page

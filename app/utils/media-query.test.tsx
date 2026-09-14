@@ -1,4 +1,5 @@
 import { act } from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { renderProbe, setupReactAct } from "../test/react"
 import { breakpoints, useBreakpoint, useMediaQuery } from "./media-query"
@@ -88,5 +89,15 @@ describe("useBreakpoint", () => {
     expect(seen).toBe(true)
     expect(breakpoints.lg).toBe("(min-width: 1024px)")
     probe.unmount()
+  })
+})
+
+describe("server rendering", () => {
+  it("uses the conservative `false` server snapshot", () => {
+    function Probe(): React.ReactElement {
+      return <span>{String(useMediaQuery("(min-width: 768px)"))}</span>
+    }
+    // No matchMedia stub: the server snapshot must not touch `window`.
+    expect(renderToStaticMarkup(<Probe />)).toContain("false")
   })
 })

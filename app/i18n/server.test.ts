@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { getCurrentLocale } from "./server"
+import { getDictionary } from "./config"
+import { getCurrentDictionary, getCurrentLocale } from "./server"
 
 /**
  * `server.ts` imports `server-only` (throws outside RSC) and reads
@@ -50,5 +51,12 @@ describe("getCurrentLocale resolution priority", () => {
 
   it("defaults to English with no signals", async () => {
     await expect(getCurrentLocale()).resolves.toBe("en")
+  })
+
+  it("pairs the resolved locale with its dictionary", async () => {
+    storage.cookie = "de"
+    const { locale, dict } = await getCurrentDictionary()
+    expect(locale).toBe("de")
+    expect(dict).toBe(getDictionary("de"))
   })
 })

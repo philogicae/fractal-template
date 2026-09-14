@@ -53,6 +53,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - `pnpm start` - Start production server
 - `pnpm lint` - Run Biome linter and formatter (auto-fix)
 - `pnpm test` - Run Vitest
+- `pnpm test:coverage` - Run Vitest with the 100% coverage gate
 - `pnpm test:watch` - Run Vitest in watch mode
 - `pnpm test:ui` - Run Vitest with browser UI
 - `pnpm upgrade` - Update all dependencies
@@ -96,6 +97,7 @@ app/
 │   └── counter.ts         # (demo) counter store
 ├── test/                  # Test harness (Vitest)
 │   ├── react.tsx          # act/createRoot harness (no testing-library)
+│   ├── render.tsx         # LocaleProvider render wrappers
 │   └── stubs/
 │       └── server-only.ts # Stub for the `server-only` package in tests
 ├── utils/                 # Utility functions
@@ -112,8 +114,8 @@ app/
 ├── not-found.tsx          # 404 page
 └── sitemap.ts             # SEO sitemap generation
 
-vitest.config.js           # Vitest configuration (path aliases, jsdom)
-                           # Colocated tests ship as *.test.ts(x) next to the code (10 files)
+vitest.config.js           # Vitest configuration (tsconfig paths, jsdom, 100% coverage gate)
+                           # Colocated tests ship as *.test.ts(x) next to the code
 .env.example               # Environment variable template
 public/                    # Static assets
 ├── images/

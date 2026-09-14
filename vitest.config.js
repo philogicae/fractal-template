@@ -13,5 +13,24 @@ export default defineConfig({
     include: ["app/**/*.test.ts", "app/**/*.test.tsx"],
     environment: "jsdom",
     passWithNoTests: true,
+    coverage: {
+      provider: "v8",
+      all: true,
+      include: ["app/**/*.{ts,tsx}"],
+      exclude: [
+        "app/**/*.test.{ts,tsx}",
+        "app/test/**",
+        "app/globals.css",
+      ],
+      reporter: process.env.CI ? ["text", "json-summary"] : ["text"],
+      // Every shipped file is expected to stay fully covered. Relax these
+      // when adding code that cannot be meaningfully unit-tested.
+      thresholds: {
+        statements: 100,
+        branches: 100,
+        functions: 100,
+        lines: 100,
+      },
+    },
   },
 })

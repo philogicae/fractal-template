@@ -45,12 +45,10 @@ function AnimatedSection({
   delay?: number
   className?: string
 }): React.ReactElement {
-  const delayStyle = delay > 0 ? { animationDelay: `${delay}ms` } : undefined
-
   return (
     <div
       className={`animate-fade-in-up opacity-0 fill-mode-forwards ${className}`}
-      style={delayStyle}
+      style={{ animationDelay: `${delay}ms` }}
     >
       {children}
     </div>

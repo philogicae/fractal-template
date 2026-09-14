@@ -126,6 +126,14 @@ describe("useDebouncedCallback", () => {
     advance(500)
     expect(calls).toEqual([])
   })
+
+  it("unmounts cleanly without a pending timer", () => {
+    const calls: string[] = []
+    const probe = makeProbe(calls)
+    probe.unmount()
+    advance(500)
+    expect(calls).toEqual([])
+  })
 })
 
 describe("useDebounceState", () => {

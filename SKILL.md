@@ -77,6 +77,7 @@ Requirements: **Node.js 26+**, **pnpm 11+**, modern browser.
 │   │   └── counter.ts           # DEMO - delete
 │   ├── test/                    # Test harness (Vitest)
 │   │   ├── react.tsx            # act/createRoot harness (no testing-library)
+│   │   ├── render.tsx           # LocaleProvider render wrappers
 │   │   └── stubs/
 │   │       └── server-only.ts   # Stub for the `server-only` package in tests
 │   ├── utils/                   # cn(), debounce, media-query, click-outside - Keep
@@ -424,6 +425,7 @@ pnpm build    # Production build (Turbopack)
 pnpm start    # Production server
 pnpm lint     # Biome check + auto-fix
 pnpm test     # Vitest run
+pnpm test:coverage # Vitest run with the 100% coverage gate
 pnpm test:watch # Vitest in watch mode
 pnpm test:ui  # Vitest with browser UI
 pnpm upgrade  # pnpm update && pnpm prune

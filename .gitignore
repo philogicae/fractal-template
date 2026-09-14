@@ -4,6 +4,9 @@ out/
 dist/
 *.tsbuildinfo
 
+# Test coverage (only written when an html/json reporter is requested)
+coverage/
+
 # Dependencies
 node_modules/
 

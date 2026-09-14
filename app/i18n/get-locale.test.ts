@@ -39,4 +39,9 @@ describe("getLocaleFromAcceptLanguage", () => {
   it("falls back to the default when nothing matches", () => {
     expect(getLocaleFromAcceptLanguage("zz-ZZ, qq;q=0.9")).toBe("en")
   })
+
+  it("scans the raw header for a locale embedded in an unknown tag", () => {
+    // `xx-en` has no supported base tag, but it contains `en`.
+    expect(getLocaleFromAcceptLanguage("xx-en")).toBe("en")
+  })
 })

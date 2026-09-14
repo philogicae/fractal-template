@@ -78,5 +78,8 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
-      - name: Run Vitest
-        run: pnpm test
+      - name: Run Vitest with coverage
+        run: pnpm test:coverage
+      - name: Publish coverage summary
+        if: always()
+        run: node .github/scripts/coverage-summary.mjs

@@ -41,12 +41,25 @@ function useMenu(
 function Hooked({
   onClose,
   ids,
+  isOpen = true,
 }: {
   onClose: () => void
   ids: string | string[]
+  isOpen?: boolean
 }): null {
-  useClickOutside(true, ids, onClose)
+  useClickOutside(isOpen, ids, onClose)
   return null
+}
+
+/** Mounts a panel + trigger with the hook disabled via `isOpen=false`. */
+function useDisabledMenu(onClose: () => void) {
+  return renderProbe(
+    <div>
+      <div id="outside">outside</div>
+      <div id="panel">panel</div>
+      <Hooked onClose={onClose} ids={["panel"]} isOpen={false} />
+    </div>
+  )
 }
 
 describe("useClickOutside", () => {
@@ -117,5 +130,13 @@ describe("useClickOutside", () => {
     fireMouse(document.body)
     fireEscape()
     expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it("does nothing while closed (isOpen=false)", () => {
+    const probe = useDisabledMenu(onClose)
+    fireMouse(document.body)
+    fireEscape()
+    expect(onClose).not.toHaveBeenCalled()
+    probe.unmount()
   })
 })

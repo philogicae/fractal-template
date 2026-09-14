@@ -16,9 +16,6 @@ const CACHE_REVALIDATE_SECONDS = 3600 // 1 hour
 /** Regex to match version in YAML frontmatter */
 const VERSION_REGEX = /^(\s*version:\s*")[^"]*("\s*)$/m
 
-/** Regex to extract frontmatter block (content between --- delimiters) */
-const FRONTMATTER_REGEX = /^---\n([\s\S]*?)\n---\n/
-
 /** Browser User-Agent substrings (lowercase for case-insensitive matching) */
 const BROWSER_USER_AGENTS = [
   "chrome",
@@ -778,14 +775,16 @@ interface ParsedFrontmatter {
  * Parses YAML frontmatter from markdown content.
  */
 function parseFrontmatter(content: string): ParsedFrontmatter {
-  const match = content.match(FRONTMATTER_REGEX)
+  // First closing delimiter after the opening `---\n` (search from 3 so an
+  // empty block - `---\n---\n` - still resolves).
+  const end = content.indexOf("\n---\n", 3)
 
-  if (!match) {
+  if (!content.startsWith("---\n") || end === -1) {
     return { frontmatter: {}, body: content, rawFrontmatter: "" }
   }
 
-  const rawFrontmatter = match[1] ?? ""
-  const body = content.slice(match[0].length)
+  const rawFrontmatter = content.slice(4, end)
+  const body = content.slice(end + 5)
   const frontmatter: Record<string, string> = {}
 
   // Parse only top-level key: value pairs
@@ -1025,7 +1024,7 @@ function wantsHtml(request: Request): boolean {
   if (NON_BROWSER_USER_AGENTS.some((ua) => userAgent.includes(ua))) return false
 
   // Parse Accept header (strip quality values)
-  const types = accept.split(",").map((t) => t.split(";")[0]?.trim() ?? "")
+  const types = accept.split(",").map((t) => t.replace(/;.*/, "").trim())
 
   // Explicit content type requests
   if (
