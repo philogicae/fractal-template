@@ -11,6 +11,11 @@ export default defineConfig({
   },
   test: {
     include: ["app/**/*.test.ts", "app/**/*.test.tsx"],
+    // vmThreads creates the jsdom environment once per worker and reuses it
+    // across files (vm contexts keep per-file isolation) instead of paying a
+    // fresh jsdom per test file. maxWorkers caps the pool at 3 threads.
+    pool: "vmThreads",
+    maxWorkers: 3,
     environment: "jsdom",
     passWithNoTests: true,
     coverage: {

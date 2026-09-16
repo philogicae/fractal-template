@@ -114,7 +114,7 @@ app/
 ├── not-found.tsx          # 404 page
 └── sitemap.ts             # SEO sitemap generation
 
-vitest.config.js           # Vitest configuration (tsconfig paths, jsdom, 100% coverage gate)
+vitest.config.js           # Vitest configuration (tsconfig paths, jsdom, vmThreads pool, 100% coverage gate)
                            # Colocated tests ship as *.test.ts(x) next to the code
 .env.example               # Environment variable template
 public/                    # Static assets
@@ -187,7 +187,7 @@ docker compose up --build       # Build and run on :3000
 - **Security headers** - HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy. No page-level CSP is set - add one if your app needs it.
 - **Image optimization** - AVIF/WebP formats, 24h minimum cache TTL, remote patterns over HTTPS, strict `contentSecurityPolicy` on image responses to neutralize SVG XSS.
 - **Standalone output** - `output: "standalone"` in `next.config.mjs` produces a minimal production server bundle for slim Docker images.
-- **Long-term caching** - 1 week for `/images`, `/fonts`, and `/_next/static` (Next.js content-hashed URLs make this safe).
+- **Long-term caching** - 1 week for `/images` and `/fonts`. `/_next/static` is left to Next.js, which serves those content-hashed chunks with `max-age=31536000, immutable`.
 - **Package import optimization** - `@heroui/react`, `@heroui/styles` tree-shaken via `experimental.optimizePackageImports`.
 - **Compression** - enabled by default; `x-powered-by` header stripped.
 

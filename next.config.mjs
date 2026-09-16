@@ -54,7 +54,10 @@ const nextConfig = {
     },
   },
 
-  // Headers for caching and security
+  // Headers for caching and security.
+  // `/_next/static` is intentionally not overridden: Next serves those
+  // content-hashed chunks with `max-age=31536000, immutable`, and a custom
+  // rule would trigger a build warning and weaken that caching.
   async headers() {
     return [
       {
@@ -101,17 +104,6 @@ const nextConfig = {
       {
         // Cache fonts - 1 week
         source: "/fonts/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=604800",
-          },
-        ],
-      },
-      {
-        // Cache Next.js static chunks (JS/CSS) - 1 week
-        // Next.js uses content hashing in filenames, so new builds get new URLs
-        source: "/_next/static/:path*",
         headers: [
           {
             key: "Cache-Control",

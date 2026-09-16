@@ -1092,8 +1092,13 @@ export async function GET(request: Request): Promise<Response> {
       },
     })
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Failed to read SKILL.md"
+    // `instanceof Error` is realm-sensitive: Node built-in errors (e.g. from
+    // fs) are created outside the VM realm the tests run in, so they fail the
+    // check under the vmThreads pool. `Error.isError` is a cross-realm brand
+    // check (ES2025, Node 24+) that behaves identically in every realm.
+    const errorMessage = Error.isError(error)
+      ? error.message
+      : "Failed to read SKILL.md"
 
     // Return error in appropriate format based on what user requested
     if (shouldReturnHtml) {

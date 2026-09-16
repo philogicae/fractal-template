@@ -207,13 +207,15 @@ export function Example(): React.ReactElement {
 ## Testing instructions
 
 - Runner: Vitest (`pnpm test`; `pnpm test:coverage` for the coverage gate), jsdom environment, path aliases resolved from `tsconfig.json` via `resolve.tsconfigPaths` in `vitest.config.js`. Tests live next to the code as `*.test.ts(x)`.
+- The suite runs in the `vmThreads` pool capped at `maxWorkers: 3` (`vitest.config.js`), so the jsdom environment is created once per worker and reused across files while vm contexts keep per-file isolation.
 - Coverage is enforced at **100%** (statements, branches, functions, lines) with `all: true` in `vitest.config.js`; CI runs `pnpm test:coverage`, so an untested file or branch fails the build. Relax the thresholds when adding code that cannot be meaningfully unit-tested.
 - In CI the coverage table is also published to the GitHub Actions job summary by `.github/scripts/coverage-summary.mjs` (it reads the `json-summary` report, which is only emitted when `process.env.CI` is set so local runs stay file-free).
 - Covered today: the i18n layer (registry key parity, `Accept-Language` resolution, provider context + Server Action cookie, dictionaries), all shared components (`Container`, `Skeleton`, `FeatureCard`, `StatusBadge`, `ThemeToggle`, `LanguageSwitcher`), layout chrome (`Navbar`, `Footer`, root `layout.tsx` metadata/viewport/branches, `Providers`), every page (`/`, `/playground`, 404, loading, error boundary, sitemap), the utilities and counter store (`cn`, debounce, media query, click-outside), and both route handlers (`/api/hello` echo + 400; `/skill.md` negotiation matrix, rendering, and error paths).
 - Render tests use the tiny `act`/`createRoot` helpers in `app/test/react.tsx` (`renderProbe`) plus `withLocale`/`renderWithLocale` from `app/test/render.tsx`, which mounts inside a real `LocaleProvider` - no `@testing-library` dependency. Test files mock the Next pieces they need (`next/navigation`, `next/link`, `next/image`, `next/font/google`, `next/headers`) and `@i18n/actions` when a test triggers a locale change.
 - `server-only` is aliased to `app/test/stubs/server-only.ts` in `vitest.config.js` (Next aliases it internally; it is not an installable dependency).
 - `vitest.config.js` sets `passWithNoTests: true`, so an empty suite doesn't fail CI.
-- Keep Vitest's `isolate` option at its default (`true`). Disabling isolation shares the module graph between test files, so mock identities can leak across files and cause rare, order-dependent failures.
+- Do not switch the pool back to `threads`/`forks` or set `isolate: false`: the vm pool is what keeps jsdom from being recreated per file (the `Environment` diagnostic in the run summary), while vm contexts preserve the per-file isolation that `isolate: false` sacrifices - with isolation off, mock identities leak across files and cause rare, order-dependent failures.
+- Node built-ins run outside the VM realm, so their Error objects fail `instanceof Error` inside app code under this pool. Use `Error.isError(error)` (ES2025, Node 24+) for realm-safe error checks.
 - When adding a utility, hook, route handler, component, or page, add a test defending its observable contract. Visual polish is still verified in the browser; behavior is covered in jsdom.
 
 ## Project structure (template baseline)
@@ -267,7 +269,7 @@ app/
 ├── loading.tsx           # Loading UI with Skeleton
 ├── not-found.tsx         # 404 page
 └── sitemap.ts            # SEO sitemap generation
-vitest.config.js          # Vitest test runner config (path aliases, jsdom)
+vitest.config.js          # Vitest test runner config (path aliases, jsdom, vmThreads pool)
 public/                   # Static assets
 ├── images/
 │   ├── logo.gif
@@ -414,7 +416,7 @@ import { useClickOutside } from "@utils/click-outside";
 - Default to Server Components; keep `"use client"` boundaries small.
 - Reach for `memo()` / `useCallback` / `useMemo` only when profiling shows a real re-render cost. Do **not** wrap zero-prop or stable-prop components in `memo()`.
 - Always select Zustand state with a selector (see above).
-- `next.config.mjs` enables `output: "standalone"` for slim Docker images (skipped on Vercel: `process.env.VERCEL ? undefined : "standalone"`), `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, compression, 1-week cache headers for `/images`, `/fonts`, `/_next/static`, and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set - add one if your app needs it.
+- `next.config.mjs` enables `output: "standalone"` for slim Docker images (skipped on Vercel: `process.env.VERCEL ? undefined : "standalone"`), `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, compression, 1-week cache headers for `/images` and `/fonts` (Next's own immutable caching covers `/_next/static`), and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set - add one if your app needs it.
 - The `Dockerfile` ships a multi-stage build (`base` → `deps` → `builder` → slim `runner`) that runs `node server.js` from the standalone bundle as a non-root user with a `HEALTHCHECK`.
 - CI/CD runs on every push (`lint` → `build` → `test`) via `.github/workflows/ci-cd.yml`. The lint job runs `pnpm biome ci app` (check only, no auto-fix - stricter than the local `pnpm lint`).
 
