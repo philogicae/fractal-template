@@ -1,5 +1,7 @@
 import { getDictionary, localeMeta, locales } from "@i18n/config"
 import { act } from "react"
+import { hydrateRoot } from "react-dom/client"
+import { renderToStaticMarkup } from "react-dom/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { renderProbe, setupReactAct } from "../test/react"
 import { LanguageSwitcher } from "./LanguageSwitcher"
@@ -124,6 +126,30 @@ describe("LanguageSwitcher", () => {
     })
     expect(dropdown(probe.container)).toBeNull()
     probe.unmount()
+  })
+
+  it("tolerates emoji-font extensions rewriting the flag before hydration", async () => {
+    const container = document.createElement("div")
+    container.innerHTML = renderToStaticMarkup(<LanguageSwitcher />)
+    document.body.appendChild(container)
+
+    // What extensions like "Twemoji Country Flags" do to flag emoji.
+    container
+      .querySelector("#lang-switcher-trigger span")
+      ?.setAttribute("style", 'font-family: "Twemoji Country Flags"')
+
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
+    let root: ReturnType<typeof hydrateRoot> | undefined
+    await act(async () => {
+      root = hydrateRoot(container, <LanguageSwitcher />)
+    })
+
+    expect(consoleError).not.toHaveBeenCalled()
+    expect(trigger(container).textContent).toBe(localeMeta.en.flag)
+
+    act(() => root?.unmount())
+    consoleError.mockRestore()
+    container.remove()
   })
 
   it("disables the trigger while a locale change is pending", () => {

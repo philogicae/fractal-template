@@ -1,9 +1,9 @@
 "use client"
 
 import { useDict } from "@i18n/LocaleProvider"
+import { useIsClient } from "@utils/hydration"
 import { cn } from "@utils/tw"
 import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
 
 function SunIcon({ className }: { className?: string }): React.ReactElement {
   return (
@@ -61,28 +61,22 @@ function MoonIcon({ className }: { className?: string }): React.ReactElement {
  */
 export function ThemeToggle(): React.ReactElement {
   const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const isClient = useIsClient()
   const dict = useDict()
 
-  useEffect(() => setMounted(true), [])
-
-  const isDark = mounted && resolvedTheme === "dark"
-
-  const handleClick = () => {
-    setTheme(isDark ? "light" : "dark")
-  }
+  const isDark = isClient && resolvedTheme === "dark"
+  const Icon = isDark ? SunIcon : MoonIcon
+  const label = isDark
+    ? dict.nav.themeToLight
+    : isClient
+      ? dict.nav.themeToDark
+      : dict.nav.themeToggle
 
   return (
     <button
       type="button"
-      onClick={handleClick}
-      aria-label={
-        mounted
-          ? isDark
-            ? dict.nav.themeToLight
-            : dict.nav.themeToDark
-          : dict.nav.themeToggle
-      }
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={label}
       className={cn(
         "theme-toggle",
         "inline-flex items-center justify-center h-6 w-6 sm:h-8 sm:w-8 min-w-0 rounded-lg",
@@ -92,17 +86,7 @@ export function ThemeToggle(): React.ReactElement {
         "hover:bg-(--color-pitch-black) hover:text-(--color-ghost-white)"
       )}
     >
-      <span suppressHydrationWarning>
-        {mounted ? (
-          isDark ? (
-            <SunIcon className="w-3 h-3 sm:w-4 sm:h-4" />
-          ) : (
-            <MoonIcon className="w-3 h-3 sm:w-4 sm:h-4" />
-          )
-        ) : (
-          <MoonIcon className="w-3 h-3 sm:w-4 sm:h-4" />
-        )}
-      </span>
+      <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
     </button>
   )
 }

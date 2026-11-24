@@ -12,32 +12,18 @@ import {
 import type { Dictionary } from "@i18n/config"
 import { useDict } from "@i18n/LocaleProvider"
 import { useCounterStore } from "@stores/counter"
-import { memo, useCallback, useMemo, useState } from "react"
+import { memo, useCallback, useReducer, useRef } from "react"
+import {
+  type ApiResponse,
+  type EndpointState,
+  endpointCount,
+  endpointsReducer,
+  initialEndpoints,
+  type RequestKey,
+  type ResponseBody,
+} from "./state"
 
 type PlaygroundDict = Dictionary["playground"]
-
-interface ApiResponse {
-  message?: string
-  timestamp?: string
-  status?: string
-  data?: unknown
-  error?: string
-}
-
-type RequestKey = "hello" | "post" | "skill"
-
-type Status = "idle" | "loading" | "success" | "error"
-
-interface EndpointState {
-  status: Status
-  response: ApiResponse | string | null
-}
-
-const initialState: Record<RequestKey, EndpointState> = {
-  hello: { status: "idle", response: null },
-  post: { status: "idle", response: null },
-  skill: { status: "idle", response: null },
-}
 
 /**
  * API endpoint card with method badge, status indicator, and response preview.
@@ -68,6 +54,14 @@ const EndpointCard = memo(function EndpointCard({
   t,
 }: EndpointCardProps): React.ReactElement {
   const isPending = state.status === "loading"
+  const responseText =
+    state.status === "success"
+      ? typeof state.response === "string"
+        ? state.response
+        : JSON.stringify(state.response, null, 2)
+      : state.status === "error"
+        ? state.message
+        : null
 
   return (
     <Card className="border border-(--color-border-default) bg-(--color-bg-secondary) shadow-none rounded-(--radius-cards)">
@@ -90,15 +84,13 @@ const EndpointCard = memo(function EndpointCard({
           {description}
         </p>
 
-        {state.response && (
+        {responseText !== null && (
           <div className="rounded-(--radius-cards) bg-(--color-bg-primary) border border-(--color-border-default) p-1.5 mb-1">
             <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-(--color-text-muted) mb-0.5 font-medium">
               {t.response}
             </p>
             <pre className="text-[9px] sm:text-xs text-(--color-text-primary) overflow-auto whitespace-pre-wrap wrap-break-word max-h-20 leading-snug font-mono">
-              {typeof state.response === "string"
-                ? state.response
-                : JSON.stringify(state.response, null, 2)}
+              {responseText}
             </pre>
           </div>
         )}
@@ -107,7 +99,7 @@ const EndpointCard = memo(function EndpointCard({
       <CardFooter className="p-2 pt-1">
         <Button
           onPress={onRun}
-          isPending={isPending}
+          isDisabled={isPending}
           size="sm"
           className="w-full bg-(--color-accent-primary) hover:brightness-110 text-(--color-bg-primary) font-semibold h-7 text-[10px] sm:text-xs rounded-(--radius-buttons) transition-all duration-150"
         >
@@ -187,18 +179,11 @@ const CounterControls = memo(function CounterControls({
   )
 })
 
-/**
- * Interactive playground for testing API endpoints and Zustand state.
- *
- * Performance optimizations:
- * - useCallback for event handlers
- * - useMemo for derived values
- * - memoized sub-components
- * - Zustand selectors for granular subscription
- */
+/** Interactive playground for the demo endpoints and the Zustand counter. */
 export default function PlaygroundPage(): React.ReactElement {
   const t = useDict().playground
-  const [state, setState] = useState(initialState)
+  const [endpoints, dispatch] = useReducer(endpointsReducer, initialEndpoints)
+  const lastRequestId = useRef(0)
 
   const count = useCounterStore((s) => s.count)
   const history = useCounterStore((s) => s.history)
@@ -208,34 +193,26 @@ export default function PlaygroundPage(): React.ReactElement {
   const reset = useCounterStore((s) => s.reset)
   const undo = useCounterStore((s) => s.undo)
 
-  const historyDisplay = useMemo(() => history.slice(-5).join(","), [history])
-  const canUndo = useMemo(() => history.length > 0, [history])
+  const historyDisplay = history.slice(-5).join(",")
+  const canUndo = history.length > 0
 
   const runRequest = useCallback(
     async (
       key: RequestKey,
-      fn: () => Promise<ApiResponse | string>
+      load: () => Promise<ResponseBody>
     ): Promise<void> => {
-      setState((prev) => ({
-        ...prev,
-        [key]: { status: "loading", response: null },
-      }))
+      const requestId = ++lastRequestId.current
+      dispatch({ type: "started", key, requestId })
       try {
-        const response = await fn()
-        setState((prev) => ({
-          ...prev,
-          [key]: { status: "success", response },
-        }))
+        const response = await load()
+        dispatch({ type: "loaded", key, requestId, response })
       } catch (error) {
-        setState((prev) => ({
-          ...prev,
-          [key]: {
-            status: "error",
-            response: {
-              error: error instanceof Error ? error.message : "Unknown error",
-            },
-          },
-        }))
+        dispatch({
+          type: "failed",
+          key,
+          requestId,
+          message: Error.isError(error) ? error.message : "Unknown error",
+        })
       }
     },
     []
@@ -320,7 +297,7 @@ export default function PlaygroundPage(): React.ReactElement {
               {t.apiSection}
             </h2>
             <span className="text-[10px] sm:text-xs text-(--color-text-muted)">
-              {t.apiCount.replace("{count}", "3")}
+              {t.apiCount.replace("{count}", String(endpointCount))}
             </span>
           </div>
 
@@ -329,7 +306,7 @@ export default function PlaygroundPage(): React.ReactElement {
               method="GET"
               path="/api/hello"
               description={t.endpoints.hello}
-              state={state.hello}
+              state={endpoints.hello}
               onRun={testHello}
               t={t}
             />
@@ -337,7 +314,7 @@ export default function PlaygroundPage(): React.ReactElement {
               method="POST"
               path="/api/hello"
               description={t.endpoints.post}
-              state={state.post}
+              state={endpoints.post}
               onRun={testPost}
               t={t}
             />
@@ -345,7 +322,7 @@ export default function PlaygroundPage(): React.ReactElement {
               method="GET"
               path="/skill.md?raw=1"
               description={t.endpoints.skill}
-              state={state.skill}
+              state={endpoints.skill}
               onRun={testSkill}
               t={t}
             />

@@ -1,115 +1,71 @@
 # AGENTS.md
 
-> **Audience.** AI agents working inside a repository **already cloned** from `philogicae/fractal-template` who need to customize it into a real product. This document is self-contained.
+> **Audience.** Agents working inside a repository cloned from `philogicae/fractal-template`, customizing it into a product.
 >
-> **Keep this file in sync while you work.** Every time you remove demo code, add a route/store/component, introduce an env variable, or change conventions, update the matching section of `AGENTS.md` in the same commit. The next agent reading it must see the current state of the project, not the template's baseline.
+> **Keep this file current.** When you remove demo code, add a route/store/component/env variable, or change a convention, update the matching section here in the same commit.
 >
-> **Track progress in [`CHECKLIST.md`](./CHECKLIST.md).** A structured, tickable bootstrap checklist lives at the repo root - it is the **only** source of truth for what has or hasn't been customized yet. This document deliberately does not duplicate that list; it covers conventions and patterns instead. When every box in `CHECKLIST.md` is ticked, delete it or replace it with a project-specific checklist.
+> **Progress tracking lives in [`CHECKLIST.md`](./CHECKLIST.md)** - the only source of truth for what remains to customize. This file covers conventions and patterns, not the task list. Delete `CHECKLIST.md` once every box is ticked.
 >
-> **Design Reference:** See [`DESIGN.md`](./DESIGN.md) for the complete design system reference (colors, typography, spacing, components).
+> **Design reference:** [`DESIGN.md`](./DESIGN.md) (tokens, typography, components).
 
 ## Project overview
 
 - **Framework**: Next.js 16 (App Router, Turbopack)
-- **UI**: HeroUI v3
+- **UI**: HeroUI v3 (`@heroui/react` 3.2.x)
 - **Styling**: Tailwind CSS v4 (CSS-first, via `@tailwindcss/postcss`)
-- **Design System**: Pre-configured dark and light modes. See [`DESIGN.md`](./DESIGN.md) for the complete reference (palette, typography, elevation, components).
-- **State**: Zustand
+- **State**: Zustand for shared client facts; local state/reducers for the rest (see [State model](#state-model))
 - **Lint/format**: Biome 2
-- **Package manager**: pnpm 11
-- **i18n**: Provider-based (cookie + `Accept-Language`), no URL locale segment. Ships with 12 locales (`en`, `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`); delete the ones you don't need when customizing, add more only when needed. **All user-visible text must use i18n** - no hardcoded strings in components
-- **Theme**: Light and dark mode support via next-themes. See [`DESIGN.md`](./DESIGN.md) for the complete token reference.
+- **Package manager**: pnpm 12 (pinned via `packageManager`)
+- **Tests**: Vitest 5 + jsdom, 100 % coverage gate
+- **i18n**: provider-based (cookie + `Accept-Language`), no URL locale segment. 12 locales ship (`en`, `zh`, `es`, `ar`, `fr`, `pt`, `ru`, `ja`, `de`, `ko`, `it`, `ro`). **All user-visible text must use i18n**
+- **Theme**: `next-themes`, dark by default, light mode one toggle away
 
-### Customization checklist
+## Demo code to remove
 
-**Do not duplicate this list here.** The full, tickable checklist lives in
-[`CHECKLIST.md`](./CHECKLIST.md) at the repo root - identity & metadata,
-public assets, layout / chrome, landing page & design tokens,
-internationalization, demo-code deletions, environment & infrastructure,
-documentation, and sanity checks. Work top-to-bottom through that file
-and tick boxes as you go; that is the single source of truth for what
-remains to be customized in this clone.
+These exist only to showcase the template:
 
-This document covers the **conventions** an agent needs to carry out
-those steps correctly (code style, i18n wiring, component patterns,
-common tasks). When you need a progress tracker, switch to
-`CHECKLIST.md`.
-
-### Demo code to remove
-
-These exist **only** to showcase the template:
-
-- `app/playground/` - delete entirely
+- `app/playground/` - delete the whole directory (`page.tsx`, `state.ts`, tests)
 - `app/api/hello/` - delete or replace with real endpoints
-- `app/stores/counter.ts`
-- `app/components/FeatureCard.tsx` if unused; `app/components/StatusBadge.tsx` only together with `app/playground/` (the playground page consumes it, so it cannot be deleted independently)
-- `/playground` entry in `siteConfig.nav` (`app/config/site.ts`); the `/skill.md` entry goes only if you also remove the agent surface (see the `SKILL.md` section below)
-- Landing-page buttons in `app/page.tsx` that point to the playground, SKILL.md, the GitHub repo, or "Deploy to Vercel"
+- `app/stores/counter.ts` and its test
+- `app/components/FeatureCard.tsx` if unused; `app/components/StatusBadge.tsx` only with the playground (it has no other consumer)
+- the `/playground` entry in `siteConfig.nav` (`app/config/site.ts`); the `/skill.md` entry goes only with the agent surface
+- landing-page CTAs in `app/page.tsx` for the playground, SKILL.md, GitHub, or Vercel
 
 Keep unless you have a reason to drop them:
 
-- `app/skill.md/route.ts` - serves `SKILL.md` at `/skill.md` with content negotiation: styled HTML for browsers, raw markdown for agents/curl
-
-- `app/components/Container.tsx`, `Skeleton.tsx`, `ThemeToggle.tsx`
-- `app/config/site.ts`
-- `app/providers.tsx` (wraps children in `next-themes`'s `ThemeProvider`)
-- `app/utils/{tw,debounce,media-query,click-outside}.ts`
+- `app/skill.md/route.ts` - serves `SKILL.md` at `/skill.md` (HTML for browsers, raw markdown for agents/curl)
+- `app/components/Container.tsx`, `Skeleton.tsx`, `ThemeToggle.tsx`, `LanguageSwitcher.tsx`
+- `app/config/site.ts`, `app/providers.tsx`
+- `app/utils/{tw,debounce,media-query,click-outside,hydration}.ts`
 - `app/{error,loading,not-found}.tsx`
-- `app/i18n/*` and `app/components/LanguageSwitcher.tsx` - the internationalization layer is core infrastructure. Drop a locale you don't want (see "Add a locale" below, in reverse) rather than ripping the whole system out.
+- `app/i18n/*` - core infrastructure. Drop a locale rather than ripping the system out.
 
-**`SKILL.md` - rewrite by default, or delete.** The default expectation is that you **rewrite `SKILL.md`** so agents can interact with the shipped application through the `/skill.md` endpoint. Describe the new project's routes, API, auth, env variables, and how an agent should consume it - not how to install the template. Suggested frontmatter + sections:
+**`SKILL.md` - rewrite by default, or delete.** Rewrite it so agents can interact with the shipped app through `/skill.md`: routes, API, auth, env variables, how to consume it. If there is no agent-facing surface, delete `SKILL.md`, `app/skill.md/`, the `/skill.md` nav entry, and any `/skill.md` CTA.
 
-```markdown
----
-name: <project-name>
-description: <what the app does, who it is for>
----
+## Setup
 
-# <Project name>
-
-## Overview
-
-## Routes
-
-## API
-
-## Data model / state
-
-## Environment variables
-
-## How an agent should interact with the app
-```
-
-If the project has no agent-facing surface and the user does not want one, delete instead: `SKILL.md`, `app/skill.md/` (route handler), the `/skill.md` entry in `siteConfig.nav` (`app/config/site.ts`), and any landing-page button that links to `/skill.md` in `app/page.tsx`.
-
-## Setup commands
-
-### Requirements
-
-- Node.js 26+
-- pnpm 11+
-
-### Scripts
+Requirements: Node.js 26+, pnpm 12+. The CI and Dockerfile pin Node 26 and pnpm 12.23.0.
 
 ```bash
-pnpm dev      # Dev server, Turbopack, 0.0.0.0:3000
-pnpm build    # Production build
-pnpm start    # Production server
-pnpm lint     # Biome check + auto-fix
-pnpm test     # Vitest run
-pnpm test:coverage # Vitest run with coverage (100% thresholds)
-pnpm test:watch # Vitest watch mode
-pnpm test:ui  # Vitest UI
-pnpm upgrade  # pnpm update && pnpm prune
-pnpm clean    # rimraf .next out node_modules && pnpm install
-pnpm repomix  # Generate a markdown snapshot of the codebase for agents
+pnpm dev           # Turbopack, 0.0.0.0:3000
+pnpm build         # production build
+pnpm start         # production server
+pnpm lint          # biome check --write app --unsafe
+pnpm test          # vitest run
+pnpm test:coverage # vitest run --coverage (100% thresholds)
+pnpm test:watch    # watch mode
+pnpm test:ui       # Vitest UI
+pnpm upgrade       # pnpm update && pnpm prune
+pnpm clean         # rimraf .next out node_modules && pnpm install
+pnpm repomix       # markdown snapshot for agents
 ```
 
 ## Code style
 
 **TypeScript**
 
-- Strict mode; explicit return types on exported functions/components.
+- Strict mode, `noUncheckedIndexedAccess`, `noImplicitOverride`.
+- Explicit return types on exported functions/components.
 - `interface` for object shapes, `type` for unions.
 - `const` by default; never `var`.
 
@@ -119,317 +75,182 @@ pnpm repomix  # Generate a markdown snapshot of the codebase for agents
 - Hooks: camelCase with `use` prefix
 - Utilities / stores: camelCase
 
-**File placement**
+**Placement**
 
 - Pages: `app/<route>/page.tsx`
-- API: `app/api/<endpoint>/route.ts` - export `GET`/`POST`/`PUT`/`DELETE`
-- Components: `app/components/` - import per file (e.g. `@components/Container`)
+- API: `app/api/<endpoint>/route.ts` (`GET`/`POST`/`PUT`/`DELETE`)
+- Components: `app/components/` (import per file)
 - Layout parts: `app/layout/`
-- Config: `app/config/site.ts` (site-wide constants)
-- Stores: `app/stores/` - import per file (e.g. `@stores/counter`)
+- Config: `app/config/site.ts`
+- Stores: `app/stores/`
 - Utilities: `app/utils/`
+- Pure state modules: colocated with their consumer (e.g. `app/playground/state.ts`)
 
 **Formatting**
 
-- `pnpm lint` runs `biome check --write app --unsafe` over the app directory. Run it before finishing a task.
+`pnpm lint` runs `biome check --write app --unsafe`. Run it before finishing.
 
 ## Component patterns
 
-**Server vs Client**
-
-- Default to Server Components.
-- Add `"use client"` only when a file needs hooks, browser APIs, or event handlers.
-- Keep the client boundary small - extract the interactive part into its own component.
-
-**HeroUI v3**
-
-- Button variants: `primary` (default), `secondary`, `tertiary`, `outline`, `ghost`, `danger`, `danger-soft`.
-- No loading/pending prop exists on `Button` (as of `@heroui/react` 3.2.4) - handle async loading state manually (e.g. `isDisabled` + your own spinner).
-- Card parts: `CardHeader`, `CardContent`, `CardFooter` (no `CardBody`).
-
-**Styling**
-
-- Tailwind utilities + CSS variables from `globals.css`.
-- Use `cn()` from `@utils/tw` for conditional class merging.
-- **Always use CSS variables** - never raw hex values or Tailwind color classes like `text-emerald-500`.
+- Default to Server Components; add `"use client"` only for hooks, browser APIs, or event handlers. Keep the client boundary small.
+- HeroUI v3:
+  - Button variants: `primary` (default), `secondary`, `tertiary`, `outline`, `ghost`, `danger`, `danger-soft`.
+  - `Button` has **no** loading/pending prop (3.2.x). Track pending yourself, pass `isDisabled`, render your own label/spinner.
+  - Card parts: `CardHeader`, `CardContent`, `CardFooter` (no `CardBody`).
+- Always use CSS variables, never raw hex or Tailwind palette classes (`text-emerald-500`). Use `cn()` from `@utils/tw`.
 
 ```tsx
-// ✅ CORRECT - using CSS variables
 <div className="bg-(--color-bg-primary) text-(--color-text-primary)">
   <span className="text-(--color-emerald)">Success</span>
   <span className="text-(--color-rose)">Error</span>
-  <Button className="bg-(--color-accent-primary)">Click</Button>
-</div>
-
-// ❌ WRONG - raw values or Tailwind colors
-<div className="bg-[#08090a] text-[#f8fafc]">
-  <span className="text-emerald-500">Success</span>
-  <span className="text-rose-500">Error</span>
 </div>
 ```
 
-**Available Color Tokens:**
+Common tokens:
 
 ```
-Primitive:  --color-pitch-black, --color-graphite, --color-slate-elevated,
-            --color-neon-lime, --color-cyan-glow, --color-emerald,
-            --color-amber, --color-rose, --color-electric-violet, ...
-
-Semantic:   --color-bg-primary, --color-bg-secondary, --color-text-primary,
-            --color-text-secondary, --color-border-default, ...
-
-Accent:     --color-accent-primary, --color-accent-secondary, --color-accent-hover
-
-Status:     --color-emerald (success), --color-amber (warning),
-            --color-rose (error), --color-hot-pink (attention)
+Primitive: --color-pitch-black, --color-graphite, --color-slate-elevated,
+           --color-neon-lime, --color-cyan-glow, --color-emerald,
+           --color-amber, --color-rose, --color-electric-violet
+Semantic:  --color-bg-primary/secondary/elevated/surface,
+           --color-text-primary/secondary/muted/tertiary,
+           --color-border-default/subtle/input
+Accent:    --color-accent-primary/secondary/hover
 ```
 
-**Example client component**
+## State model
 
-```tsx
-"use client";
-import { Container } from "@components/Container";
-import { Button } from "@heroui/react";
-import { useState } from "react";
+- **Derive, don't store.** No `useState` for a value computable from props, other state, the URL, or a store. No effect whose only job is copying one value into another.
+- **One owner per fact.** Server data: RSC. URL state: `searchParams`. Unsaved drafts: local state. Shared client facts: one store read through selectors.
+- **Impossible states must not type-check.** Mutually exclusive UI states are one discriminated union (`idle | loading | success | error`), each variant carrying only its own data.
+- **Async work has a validity rule.** Carry a request id (or `AbortSignal`); drop results from superseded requests in the reducer. Reference: `app/playground/state.ts` and its race test.
+- **Use the platform primitive.** `useSyncExternalStore` for external systems (media query, hydration, browser APIs), `useTransition` for pending transitions, `useActionState` for forms.
+- Reset a subtree with `key`; reset same-component state during render (see `Navbar`), not in an effect.
 
-export function Example(): React.ReactElement {
-  const [value, setValue] = useState("");
-  return (
-    <Container size="md">
-      <Button variant="outline" onPress={() => setValue("x")}>
-        Click
-      </Button>
-    </Container>
-  );
-}
-```
+## Testing
 
-## Testing instructions
+- Vitest, jsdom, path aliases from `tsconfig.json`. Tests sit next to the code as `*.test.ts(x)`.
+- Pool: `vmThreads`, `maxWorkers: 3`, so jsdom is created once per worker and vm contexts keep per-file isolation. Do not switch to `threads`/`forks` or `isolate: false` (mock identities leak across files).
+- Coverage is enforced at **100 %** (statements, branches, functions, lines) with `all: true`. CI runs `pnpm test:coverage`, so an untested file or branch fails the build. Relax the thresholds only for code that cannot be meaningfully unit-tested.
+- CI publishes the coverage table to the job summary via `.github/scripts/coverage-summary.mjs` (reads `json-summary`, emitted only when `process.env.CI` is set).
+- Render tests use `app/test/react.tsx` (`renderProbe`, `act`/`createRoot`) and `app/test/render.tsx` (`withLocale`/`renderWithLocale`) - no `@testing-library`. Tests mock the Next pieces they need (`next/navigation`, `next/link`, `next/image`, `next/font/google`, `next/headers`, `@i18n/actions`).
+- `server-only` is aliased to `app/test/stubs/server-only.ts`.
+- `biome.json` disables `correctness/noComponentHookFactories` for test files: probes intentionally close over local spies.
+- Node built-ins run outside the VM realm, so their errors fail `instanceof Error` under this pool. Use `Error.isError(error)`.
+- Every utility, hook, route handler, component, and page gets a test defending its observable contract. Visual polish is verified in the browser.
 
-- Runner: Vitest (`pnpm test`; `pnpm test:coverage` for the coverage gate), jsdom environment, path aliases resolved from `tsconfig.json` via `resolve.tsconfigPaths` in `vitest.config.js`. Tests live next to the code as `*.test.ts(x)`.
-- The suite runs in the `vmThreads` pool capped at `maxWorkers: 3` (`vitest.config.js`), so the jsdom environment is created once per worker and reused across files while vm contexts keep per-file isolation.
-- Coverage is enforced at **100%** (statements, branches, functions, lines) with `all: true` in `vitest.config.js`; CI runs `pnpm test:coverage`, so an untested file or branch fails the build. Relax the thresholds when adding code that cannot be meaningfully unit-tested.
-- In CI the coverage table is also published to the GitHub Actions job summary by `.github/scripts/coverage-summary.mjs` (it reads the `json-summary` report, which is only emitted when `process.env.CI` is set so local runs stay file-free).
-- Covered today: the i18n layer (registry key parity, `Accept-Language` resolution, provider context + Server Action cookie, dictionaries), all shared components (`Container`, `Skeleton`, `FeatureCard`, `StatusBadge`, `ThemeToggle`, `LanguageSwitcher`), layout chrome (`Navbar`, `Footer`, root `layout.tsx` metadata/viewport/branches, `Providers`), every page (`/`, `/playground`, 404, loading, error boundary, sitemap), the utilities and counter store (`cn`, debounce, media query, click-outside), and both route handlers (`/api/hello` echo + 400; `/skill.md` negotiation matrix, rendering, and error paths).
-- Render tests use the tiny `act`/`createRoot` helpers in `app/test/react.tsx` (`renderProbe`) plus `withLocale`/`renderWithLocale` from `app/test/render.tsx`, which mounts inside a real `LocaleProvider` - no `@testing-library` dependency. Test files mock the Next pieces they need (`next/navigation`, `next/link`, `next/image`, `next/font/google`, `next/headers`) and `@i18n/actions` when a test triggers a locale change.
-- `server-only` is aliased to `app/test/stubs/server-only.ts` in `vitest.config.js` (Next aliases it internally; it is not an installable dependency).
-- `biome.json` disables `correctness/noComponentHookFactories` for `*.test.ts(x)`: test probes are intentionally declared inside tests so they can close over local spies and assertions.
-- `vitest.config.js` sets `passWithNoTests: true`, so an empty suite doesn't fail CI.
-- Do not switch the pool back to `threads`/`forks` or set `isolate: false`: the vm pool is what keeps jsdom from being recreated per file (the `Environment` diagnostic in the run summary), while vm contexts preserve the per-file isolation that `isolate: false` sacrifices - with isolation off, mock identities leak across files and cause rare, order-dependent failures.
-- Node built-ins run outside the VM realm, so their Error objects fail `instanceof Error` inside app code under this pool. Use `Error.isError(error)` (ES2025, Node 24+) for realm-safe error checks.
-- When adding a utility, hook, route handler, component, or page, add a test defending its observable contract. Visual polish is still verified in the browser; behavior is covered in jsdom.
-
-## Project structure (template baseline)
+## Project structure
 
 ```
 app/
-├── api/                  # Route handlers (GET/POST/PUT/DELETE)
-│   └── hello/            #   DEMO: example endpoint - delete or replace
-├── skill.md/             # Serves SKILL.md raw at /skill.md
-├── components/           # Shared UI (no barrel - import per file)
-│   ├── Container.tsx     #   Width wrapper (keep)
-│   ├── Skeleton.tsx      #   Themed pulse placeholder (keep)
-│   ├── ThemeToggle.tsx   #   Dark/light switch (keep)
-│   ├── LanguageSwitcher.tsx # Locale dropdown (keep)
-│   ├── FeatureCard.tsx   #   DEMO: landing feature card - delete if unused
-│   └── StatusBadge.tsx   #   DEMO: status indicator - delete if unused (consumed by playground)
-├── test/                   # Test harness (colocated *.test.ts(x) files live next to the code they cover)
-│   ├── react.tsx           #   Tiny act/createRoot harness - no @testing-library dependency
-│   ├── render.tsx          #   withLocale()/renderWithLocale() LocaleProvider wrappers
-│   └── stubs/
-│       └── server-only.ts  #   server-only stub aliased in vitest.config.js
-├── config/               # Site-wide config (site.ts) - edit here, not in layout/page
-│   └── site.ts           #   Name, description, nav, socials, theme colors
-├── i18n/                 # Internationalization (provider-based, no URL segment)
-│   ├── config.ts         #   SINGLE REGISTRY: Locale, Dictionary, locales,
-│   │                     #   localeMeta, hasLocale(), getDictionary() - all
-│   │                     #   derived from the statically-imported dictionaries
-│   ├── dictionaries/     #   en.json (default). Delete extra locales when customizing;
-│   │                     #   add more only when needed. Each ships `meta: { flag, native }`
-│   ├── get-locale.ts     #   Accept-Language matcher (zero-dep)
-│   ├── server.ts         #   getCurrentLocale(), getCurrentDictionary()
-│   ├── actions.ts        #   setLocaleAction Server Action (writes NEXT_LOCALE cookie)
-│   └── LocaleProvider.tsx#   client context: useLocale(), useDict()
-├── layout/               # Navbar.tsx (with LanguageSwitcher), Footer.tsx
-│   ├── Navbar.tsx
-│   └── Footer.tsx
-├── playground/           # DEMO: interactive playground page - delete
-│   └── page.tsx
-├── stores/               # Zustand (no barrel - import per file)
-│   └── counter.ts        #   DEMO: counter store - delete if unused
-├── utils/                  # tw, debounce, media-query, click-outside
-│   ├── tw.ts             #   cn() class merger
-│   ├── debounce.ts       #   Debounce hooks
-│   ├── media-query.ts    #   Responsive hooks
-│   └── click-outside.ts  #   useClickOutside hook for dropdowns
-├── globals.css           # Design tokens + CSS variables
-├── layout.tsx            # Async root layout (reads locale, passes dict to providers)
-├── providers.tsx         # Client providers (next-themes + LocaleProvider)
+├── api/hello/            # DEMO endpoint (+ route.test.ts)
+├── skill.md/             # /skill.md content negotiation (HTML vs markdown)
+├── components/           # Container, Skeleton, ThemeToggle, LanguageSwitcher,
+│                         #   FeatureCard (demo), StatusBadge (demo)
+├── config/site.ts        # Brand, nav (labelKey), socials, theme colors
+├── i18n/
+│   ├── config.ts         # Locale, Dictionary, locales, localeMeta,
+│   │                     #   hasLocale(), getDictionary()
+│   ├── dictionaries/     # en.json default; each has meta { flag, native }
+│   ├── get-locale.ts     # Accept-Language matcher (zero-dep)
+│   ├── server.ts         # getCurrentLocale(), getCurrentDictionary()
+│   ├── actions.ts        # setLocaleAction (NEXT_LOCALE cookie)
+│   └── LocaleProvider.tsx# useLocale(), useDict()
+├── layout/               # Navbar.tsx, Footer.tsx
+├── playground/           # DEMO: page.tsx + state.ts (reducer) + tests
+├── stores/counter.ts     # DEMO store
+├── test/                 # react.tsx, render.tsx, stubs/server-only.ts
+├── utils/                # tw, debounce, media-query, click-outside, hydration
+├── globals.css           # Design tokens + component classes
+├── layout.tsx            # Root layout: locale, fonts, metadata, analytics
+├── providers.tsx         # next-themes + LocaleProvider
 ├── page.tsx              # Landing page
-├── error.tsx             # Error boundary
-├── loading.tsx           # Loading UI with Skeleton
-├── not-found.tsx         # 404 page
-└── sitemap.ts            # SEO sitemap generation
-vitest.config.js          # Vitest test runner config (path aliases, jsdom, vmThreads pool)
-public/                   # Static assets
-├── images/
-│   ├── logo.gif
-│   ├── apple-touch-icon.png
-│   └── screenshot.jpeg
-├── favicon.ico
-└── robots.txt
-.env.example              # Environment variable template
-next.config.mjs           # Next.js config (security headers, images, etc.)
-biome.json                # Lint/format config
-tsconfig.json             # TypeScript config (includes path aliases)
-Dockerfile                # Multi-stage build with standalone output
-compose.yaml              # Docker Compose configuration
-SKILL.md                  # Agent Skill definition (bootstrap instructions)
-AGENTS.md                 # In-repo agent conventions (this file)
-README.md                 # Human-facing project overview
-CHECKLIST.md              # Tickable bootstrap checklist
-DESIGN.md                 # Complete design system reference
-CHANGELOG.md              # Changelog (generated via git-cliff, config in cliff.toml)
-LICENSE                   # License
-postcss.config.mjs        # Tailwind CSS v4 wiring (@tailwindcss/postcss)
-pnpm-workspace.yaml       # pnpm workspace settings (allowBuilds, minimumReleaseAgeExclude)
-.npmrc                    # pnpm/npm settings (engine-strict)
-.dockerignore             # Docker build context exclusions
-cliff.toml                # git-cliff changelog generator config
+├── error.tsx / loading.tsx / not-found.tsx
+└── sitemap.ts
+vitest.config.js          # jsdom, tsconfig paths, vmThreads pool, coverage gate
+next.config.mjs           # security headers, images, caching
 ```
 
-Path aliases (`tsconfig.json`, with `noUncheckedIndexedAccess` + `noImplicitOverride` on):
-
-```json
-"@components/*": ["./app/components/*"],
-"@config/*":     ["./app/config/*"],
-"@i18n/*":       ["./app/i18n/*"],
-"@layout/*":     ["./app/layout/*"],
-"@stores/*":     ["./app/stores/*"],
-"@utils/*":      ["./app/utils/*"]
-```
-
-> No barrel exports. Every import targets a specific file (`@components/Container`, `@stores/counter`, `@layout/Navbar`, ...). Keeps tree-shaking predictable and avoids circular-import traps.
+Path aliases (`@components`, `@config`, `@i18n`, `@layout`, `@stores`, `@utils`). No barrel exports.
 
 ## Common tasks
 
 **Add a page**
 
 1. Create `app/<route>/page.tsx`.
-2. Add an entry to `siteConfig.nav` in `app/config/site.ts` if it should appear in the header. Entries carry a `labelKey` (not a literal label); add the matching key to `NavLabelKey` and to `dict.nav` in every `app/i18n/dictionaries/*.json`.
-3. Wrap any user-visible string in the dictionary: in a Server Component use `const { dict } = await getCurrentDictionary()` (`@i18n/server`), in a Client Component use `const dict = useDict()` (`@i18n/LocaleProvider`).
+2. Add a `siteConfig.nav` entry if it belongs in the header. Entries carry a `labelKey`; add the key to `NavLabelKey` and to `dict.nav` in every dictionary.
+3. Localize copy: `getCurrentDictionary()` in Server Components, `useDict()` in Client Components.
 
 **Add a locale**
 
-1. When customizing, first delete extra locale files you don't need (e.g., `fr.json`, `es.json`, `ro.json`) and remove their imports from `app/i18n/config.ts`.
-2. To add a locale: create `app/i18n/dictionaries/<code>.json` - copy `en.json` as a scaffold so the `Dictionary` type stays satisfied. **Update the top-level `meta` object** (`flag`, `native`) - it drives the language switcher.
-3. In `app/i18n/config.ts`, add one static import (`import xx from "./dictionaries/xx.json"`) and one entry in the `dictionaries` map. That's it - `Locale`, `locales`, `localeMeta`, `hasLocale()`, `getDictionary()`, and the switcher all derive from that map.
+1. Copy `en.json` to `app/i18n/dictionaries/<code>.json` and translate it. Update `meta.{flag,native}`.
+2. Add one static import and one entry to the `dictionaries` map in `app/i18n/config.ts`.
+3. `Locale`, `locales`, `localeMeta`, `hasLocale()`, `getDictionary()`, and the switcher derive from that map.
 
 **Add an API route**
 
 ```ts
 // app/api/<endpoint>/route.ts
 export async function GET(): Promise<Response> {
-  return Response.json({ ok: true });
-}
-
-export async function POST(request: Request): Promise<Response> {
-  const body = await request.json();
-  return Response.json({ received: body });
+  return Response.json({ ok: true })
 }
 ```
 
-**Create a Zustand store**
+**Create a store and read it**
 
 ```ts
-// app/stores/<name>.ts
-import { create } from "zustand";
-
-interface State {
-  value: string;
-  setValue: (v: string) => void;
-}
-
 export const useMyStore = create<State>()((set) => ({
   value: "",
-  setValue: (v) => set({ value: v }),
-}));
+  setValue: (value) => set({ value }),
+}))
+
+const value = useMyStore((state) => state.value) // selector: re-renders only on change
 ```
 
-**Consume a store (with selectors)**
+**SEO**
 
-```ts
-import { useCounterStore } from "@stores/counter";
-
-// Good - re-renders only when `count` changes
-const count = useCounterStore((s) => s.count);
-
-// Bad - re-renders on any state change
-const { count } = useCounterStore();
-```
-
-**SEO / Sitemap**
-
-The template ships with `app/sitemap.ts` for automatic sitemap generation. When you add/remove routes:
-
-1. Update `app/sitemap.ts` to include new pages
-2. Update `public/robots.txt` to reference your production URL
-3. Ensure `siteConfig.url` in `app/config/site.ts` matches your production domain
-
-See `app/layout.tsx` for the base metadata, OpenGraph, and Twitter card configuration.
+Update `app/sitemap.ts` and `public/robots.txt` when routes change; keep `siteConfig.url` on the production domain. Base metadata lives in `app/layout.tsx`.
 
 ## Theme system
 
-CSS variables live in `app/globals.css`. See [`DESIGN.md`](./DESIGN.md) for the complete design reference including colors, typography, elevation, spacing, and component tokens.
+CSS variables live in `app/globals.css`. [`DESIGN.md`](./DESIGN.md) documents them - keep both in sync.
 
-> **Important:** `DESIGN.md` and `app/globals.css` must always stay synchronized. When you add, remove, or modify any design token in `globals.css`, update the corresponding section in `DESIGN.md` immediately. Both files are the source of truth - `globals.css` is the implementation, `DESIGN.md` is the documentation.
-
-The template uses Tailwind utilities for radius (`rounded-*`), shadow (`shadow-*`), and transitions (`transition-*`) alongside CSS custom properties. Animation keyframes (`fade-in-up`, `fade-in`) and a `prefers-reduced-motion` override are defined in `globals.css`.
-
-Dark mode:
-
-- Powered by [`next-themes`](https://github.com/pacocoursey/next-themes) via `app/providers.tsx` (`attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`, `disableTransitionOnChange`).
-- `ThemeProvider` injects its own pre-hydration script, toggles the `dark` class on `<html>`, and persists the choice to `localStorage` (`theme` key).
-- `ThemeToggle` (`app/components/ThemeToggle.tsx`) reads `resolvedTheme` and calls `setTheme("light"|"dark")`.
-- `html` / `html.dark` background colors in `globals.css` match the first paint so neither mode flashes.
-- Dark is always the default - `prefers-color-scheme` is never consulted; the ThemeToggle choice persists in `localStorage` (`theme` key).
+- `next-themes` via `app/providers.tsx` (`attribute="class"`, `defaultTheme="dark"`, `enableSystem={false}`, `disableTransitionOnChange`), persisted in `localStorage` (`theme`).
+- `ThemeToggle` uses `resolvedTheme` + `setTheme`; `useIsClient()` avoids hydration branching.
+- `html` / `html.dark` backgrounds match the first paint (no flash). Dark is always the default; `prefers-color-scheme` is never consulted.
+- Animations (`fade-in-up`, `fade-in`) and the `prefers-reduced-motion` override live in `globals.css`.
 
 ## Utilities
 
 ```ts
-import { cn } from "@utils/tw";
-import { useMediaQuery, useBreakpoint } from "@utils/media-query";
-import {
-  useDebounce,
-  useDebouncedCallback,
-  useDebounceState,
-} from "@utils/debounce";
-import { useClickOutside } from "@utils/click-outside";
+import { cn } from "@utils/tw"
+import { useMediaQuery, useBreakpoint } from "@utils/media-query"
+import { useDebounce, useDebouncedCallback, useDebounceState } from "@utils/debounce"
+import { useClickOutside } from "@utils/click-outside"
+import { useIsClient } from "@utils/hydration"
 ```
 
-- `cn(...)` - class merge with Tailwind conflict resolution.
-- `useMediaQuery("(max-width: 768px)")`, `useBreakpoint("md")` - `sm | md | lg | xl | 2xl`.
-- `useDebounce(value, ms)`, `useDebouncedCallback(fn, ms)`, `useDebounceState(initial, ms)`.
-- `useClickOutside(isOpen, elementIds, onClose)` - dismissal behavior for floating menus: closes on `Escape` or pointer-down outside all listed elements. Pass **both** the panel id and the trigger id (e.g. `["lang-dropdown", "lang-switcher-trigger"]`), otherwise mousedown closes the menu and the click on the trigger re-opens it. Used by `LanguageSwitcher` and the mobile menu in `Navbar`.
+- `useClickOutside(isOpen, elementIds, onClose)` - closes on `Escape` or pointer-down outside every listed id. Pass **both** the panel and the trigger, or the trigger click re-opens the menu. Used by `LanguageSwitcher` and the `Navbar` mobile menu.
+- `useIsClient()` - `false` during SSR/hydration, `true` after. Use instead of `useState(false)` + `useEffect(setMounted)`.
 
 ## Performance
 
-- Default to Server Components; keep `"use client"` boundaries small.
-- Reach for `memo()` / `useCallback` / `useMemo` only when profiling shows a real re-render cost. Do **not** wrap zero-prop or stable-prop components in `memo()`.
-- Always select Zustand state with a selector (see above).
-- `next.config.mjs` enables `output: "standalone"` for slim Docker images (skipped on Vercel: `process.env.VERCEL ? undefined : "standalone"`), `optimizePackageImports` (for `@heroui/react`, `@heroui/styles`), AVIF/WebP images with a strict `contentSecurityPolicy` on image responses, compression, 1-week cache headers for `/images` and `/fonts` (Next's own immutable caching covers `/_next/static`), and 6 security headers (HSTS, X-DNS-Prefetch-Control, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy). No page-level CSP is set - add one if your app needs it.
-- The `Dockerfile` ships a multi-stage build (`base` → `deps` → `builder` → slim `runner`) that runs `node server.js` from the standalone bundle as a non-root user with a `HEALTHCHECK`.
-- CI/CD runs on every push (`lint` → `build` → `test`) via `.github/workflows/ci-cd.yml`. The lint job runs `pnpm biome ci app` (check only, no auto-fix - stricter than the local `pnpm lint`).
+- Server Components by default; small client boundaries.
+- `memo()` / `useCallback` / `useMemo` only for measured cost - not for zero-prop or stable-prop components.
+- Select Zustand state with a selector.
+- `next.config.mjs`: standalone output (off Vercel), `optimizePackageImports` (HeroUI), AVIF/WebP with a strict image CSP, compression, 1-week `/images` + `/fonts` caching, 6 security headers. No page-level CSP - add one if needed.
+- `Dockerfile`: multi-stage, standalone bundle, non-root user, `HEALTHCHECK`.
+- CI on every push: `lint` → `build` → `tests`. The lint job runs `pnpm biome ci app` (check only, stricter than local `pnpm lint`).
 
 ## Environment variables
 
-See `.env.example` for the full template. Variables consumed by the code today:
+Only these are consumed today (also listed in `.env.example` and `README.md`):
 
-- `VERCEL` - auto-set by Vercel. Toggles Analytics/SpeedInsights in `app/layout.tsx` and disables `output: "standalone"` in `next.config.mjs`.
-- `CF_WEB_ANALYTICS_TOKEN` - optional; enables the Cloudflare Web Analytics beacon in `app/layout.tsx` when set.
-- `DOCKER_PROJECT_NAME` / `DOCKER_PORT` - consumed by `compose.yaml` (see the `.env.example` comments).
+- `VERCEL` - auto-set by Vercel; gates Analytics/SpeedInsights and disables `output: "standalone"`.
+- `CF_WEB_ANALYTICS_TOKEN` - optional; enables the Cloudflare beacon in `app/layout.tsx`.
+- `DOCKER_PROJECT_NAME` / `DOCKER_PORT` - consumed by `compose.yaml`.
 
-> Note: `.env.example` also contains aspirational placeholders not yet consumed by any code - wire them up (or remove them) as you customize.
+When you add a variable: read it, document it in `.env.example`, `README.md`, and this list.
 
 ## References
 
@@ -439,5 +260,4 @@ See `.env.example` for the full template. Variables consumed by the code today:
 - [Zustand](https://zustand.docs.pmnd.rs/)
 - [Biome](https://biomejs.dev/)
 - [AGENTS.md standard](https://agents.md/)
-- [Agent Skill spec](https://agentskills.io/specification)
-- [`DESIGN.md`](./DESIGN.md) - Complete design system reference
+- [`DESIGN.md`](./DESIGN.md)

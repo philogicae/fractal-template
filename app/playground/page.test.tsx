@@ -15,7 +15,7 @@ const t = dict.playground
 const fetchMock = vi.fn()
 
 function resetStore(): void {
-  useCounterStore.setState({ count: 0, history: [], maxHistorySize: 10 })
+  useCounterStore.setState({ count: 0, history: [] })
 }
 
 function counterText(container: HTMLElement): string {
@@ -213,6 +213,38 @@ describe("app/playground/page", () => {
       release({ json: async () => ({ message: "late" }) })
     })
     expect(showsStatus(probe.container, t.status.success)).toBe(true)
+    probe.unmount()
+  })
+
+  it("keeps the newer response when an older request resolves last", async () => {
+    const resolvers: Array<(value: { json: () => Promise<unknown> }) => void> =
+      []
+    fetchMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvers.push(resolve)
+        })
+    )
+    const probe = renderProbe(withLocale(<PlaygroundPage />))
+    const [get] = sendButtons(probe.container)
+
+    // Two clicks before React re-renders the button as disabled.
+    await act(async () => {
+      get?.click()
+      get?.click()
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(showsStatus(probe.container, t.status.loading)).toBe(true)
+
+    await act(async () => {
+      resolvers[1]?.({ json: async () => ({ message: "newer" }) })
+    })
+    await act(async () => {
+      resolvers[0]?.({ json: async () => ({ message: "older" }) })
+    })
+
+    expect(responsePre(probe.container)[0]).toContain('"newer"')
+    expect(responsePre(probe.container)[0]).not.toContain("older")
     probe.unmount()
   })
 })

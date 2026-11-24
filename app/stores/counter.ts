@@ -1,19 +1,12 @@
 import { create } from "zustand"
 
-/**
- * Counter State Interface
- *
- * Example store demonstrating basic Zustand patterns.
- * Use as a reference for creating your own stores.
- */
+/** Maximum number of snapshots kept for undo. */
+const MAX_HISTORY = 10
+
 interface CounterState {
-  /** Current count value */
   count: number
-  /** History of count changes for undo functionality */
+  /** Previous counts, most recent last. */
   history: number[]
-  /** Maximum history size */
-  maxHistorySize: number
-  /** Actions */
   increment: () => void
   decrement: () => void
   incrementBy: (amount: number) => void
@@ -21,54 +14,46 @@ interface CounterState {
   undo: () => void
 }
 
-/**
- * Counter Store
- *
- * A demo store showing Zustand patterns:
- * - Basic state management
- * - Computed values (history tracking)
- * - Undo functionality
- *
- * @example
- * const { count, increment } = useCounterStore()
- * const count = useCounterStore(state => state.count)
- */
+/** Demo store showing Zustand selectors, derived values, and undo. */
 export const useCounterStore = create<CounterState>()((set) => ({
   count: 0,
   history: [],
-  maxHistorySize: 10,
 
   increment: () =>
     set((state) => ({
       count: state.count + 1,
-      history: [...state.history.slice(-state.maxHistorySize + 1), state.count],
+      history: pushSnapshot(state),
     })),
 
   decrement: () =>
     set((state) => ({
       count: state.count - 1,
-      history: [...state.history.slice(-state.maxHistorySize + 1), state.count],
+      history: pushSnapshot(state),
     })),
 
   incrementBy: (amount: number) =>
     set((state) => ({
       count: state.count + amount,
-      history: [...state.history.slice(-state.maxHistorySize + 1), state.count],
+      history: pushSnapshot(state),
     })),
 
   reset: () =>
     set((state) => ({
       count: 0,
-      history: [...state.history.slice(-state.maxHistorySize + 1), state.count],
+      history: pushSnapshot(state),
     })),
 
   undo: () =>
     set((state) => {
-      if (state.history.length === 0) return state
-      const previousCount = state.history[state.history.length - 1]
+      const previousCount = state.history.at(-1)
+      if (previousCount === undefined) return state
       return {
         count: previousCount,
         history: state.history.slice(0, -1),
       }
     }),
 }))
+
+function pushSnapshot({ count, history }: CounterState): number[] {
+  return [...history.slice(-MAX_HISTORY + 1), count]
+}

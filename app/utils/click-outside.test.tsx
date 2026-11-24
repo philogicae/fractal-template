@@ -123,6 +123,23 @@ describe("useClickOutside", () => {
     probe.unmount()
   })
 
+  it("calls the latest onClose after a re-render", () => {
+    const first = vi.fn((): void => {})
+    const second = vi.fn((): void => {})
+    const probe = useMenu(first)
+    probe.render(
+      <div>
+        <div id="outside">outside</div>
+        <div id="panel">panel</div>
+        <Hooked onClose={second} ids={["panel"]} />
+      </div>
+    )
+    fireMouse(el("outside"))
+    expect(first).not.toHaveBeenCalled()
+    expect(second).toHaveBeenCalledTimes(1)
+    probe.unmount()
+  })
+
   it("detaches listeners on unmount", () => {
     const probe = useMenu(onClose)
     probe.unmount()

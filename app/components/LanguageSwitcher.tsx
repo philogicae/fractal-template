@@ -4,7 +4,7 @@ import { type Locale, localeMeta, locales } from "@i18n/config"
 import { useLocale } from "@i18n/LocaleProvider"
 import { useClickOutside } from "@utils/click-outside"
 import { cn } from "@utils/tw"
-import { useCallback, useState } from "react"
+import { useState } from "react"
 
 /**
  * Navbar locale picker. Reads from `useLocale()` and persists the choice
@@ -24,15 +24,12 @@ export function LanguageSwitcher(): React.ReactElement {
     setOpen(false)
   )
 
-  const handleSelect = useCallback(
-    (loc: Locale) => {
-      setLocale(loc)
-      setOpen(false)
-    },
-    [setLocale]
-  )
+  const handleSelect = (loc: Locale): void => {
+    setLocale(loc)
+    setOpen(false)
+  }
 
-  const toggle = useCallback(() => setOpen((v) => !v), [])
+  const toggle = (): void => setOpen((value) => !value)
 
   return (
     <div className="relative">
@@ -50,14 +47,17 @@ export function LanguageSwitcher(): React.ReactElement {
           "transition-colors disabled:opacity-50"
         )}
       >
-        <span aria-hidden="true">{current.flag}</span>
+        {/* Emoji-font extensions rewrite the flag before hydration. */}
+        <span aria-hidden="true" suppressHydrationWarning>
+          {current.flag}
+        </span>
       </button>
 
       {open && (
         <div
           id="lang-dropdown"
           className={cn(
-            "absolute top-[calc(100%+8px)] right-0 min-w-[160px]",
+            "absolute top-[calc(100%+8px)] right-0 min-w-40",
             "bg-(--color-bg-secondary) border border-(--color-border-default)",
             "rounded-(--radius-cards) shadow-lg z-50 p-1"
           )}

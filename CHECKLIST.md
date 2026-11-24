@@ -107,7 +107,7 @@ Choose one path:
 
 ## 6. Environment & infrastructure
 
-- [ ] `.env.example` → prune placeholders, add real variables, document each (`CF_WEB_ANALYTICS_TOKEN` is optional - it enables the Cloudflare Web Analytics beacon in `app/layout.tsx` when set)
+- [ ] `.env.example` → keep only variables the code actually reads, add real ones, document each (`CF_WEB_ANALYTICS_TOKEN` is optional - it enables the Cloudflare Web Analytics beacon in `app/layout.tsx` when set)
 - [ ] `compose.yaml` → no edits needed; set `DOCKER_PROJECT_NAME` (compose project name, reused for the container and image names) and `DOCKER_PORT` in `.env` to override the `fractal-template` / `3000` defaults
 - [ ] `Dockerfile` → no change needed unless you customize the build (multi-stage, standalone output, non-root runner with HEALTHCHECK)
 - [ ] `.github/workflows/ci-cd.yml` → ready to use as-is; review only if you add tests or deploy targets
@@ -116,8 +116,8 @@ Choose one path:
 ## 7. Documentation
 
 - [ ] `README.md` → rewrite for the new project (title, features, scripts, deployment)
-- [ ] `DESIGN.md` → customize to describe your app's design system (or delete if not needed)
-- [ ] `AGENTS.md` → update the **Customization checklist**, **Demo code to remove**, and **Project structure** sections to reflect what actually remains. Keep it in sync as you add routes / stores / env variables.
+- [ ] `DESIGN.md` → customize to describe your app's design system (or delete it and update the links in `README.md` / `AGENTS.md`)
+- [ ] `AGENTS.md` → update **Demo code to remove**, **Project structure**, **State model**, and **Environment variables** to reflect what actually remains. Keep it in sync as you add routes / stores / env variables.
 - [ ] `CHECKLIST.md` (this file) → once every box is ticked, either delete it or replace it with a project-specific checklist (deploy steps, release process, etc.)
 
 ## 8. Sanity checks before handing off
@@ -125,6 +125,7 @@ Choose one path:
 Run these and fix anything that fails.
 
 - [ ] `pnpm lint` - Biome auto-fix passes
+- [ ] `pnpm test:coverage` - 100 % gate passes
 - [ ] `pnpm build` - production build succeeds
 - [ ] `pnpm dev` - app boots on http://localhost:3000 with no console errors
 - [ ] Every route in `siteConfig.nav` resolves (no 404s)
@@ -136,5 +137,5 @@ Run these and fix anything that fails.
   rg -i "next\.js template|philogicae|fractal-template|playground|counter"
   ```
 
-- [ ] `AGENTS.md` customization checklist no longer lists items that have been completed
+- [ ] `AGENTS.md` no longer lists demo code, routes, stores, or env variables that have been removed
 - [ ] `SKILL.md` either describes the new app or has been deleted (with its route handler)

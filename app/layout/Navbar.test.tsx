@@ -174,4 +174,17 @@ describe("NavBar", () => {
     expect(dropdown(probe.container)).toBeNull()
     probe.unmount()
   })
+
+  it("stays closed when navigating back to the route it was opened on", () => {
+    const probe = renderProbe(withLocale(<NavBar />))
+    act(() => mobileTrigger(probe.container).click())
+
+    navState.pathname = "/playground"
+    probe.render(withLocale(<NavBar />))
+    navState.pathname = "/"
+    probe.render(withLocale(<NavBar />))
+
+    expect(dropdown(probe.container)).toBeNull()
+    probe.unmount()
+  })
 })

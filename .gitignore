@@ -3,6 +3,7 @@
 out/
 dist/
 *.tsbuildinfo
+next-env.d.ts
 
 # Test coverage (only written when an html/json reporter is requested)
 coverage/

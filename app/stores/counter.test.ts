@@ -3,7 +3,7 @@ import { useCounterStore } from "./counter"
 
 /** Reset the module-level store so tests stay isolated. */
 function resetStore(): void {
-  useCounterStore.setState({ count: 0, history: [], maxHistorySize: 10 })
+  useCounterStore.setState({ count: 0, history: [] })
 }
 
 describe("useCounterStore", () => {

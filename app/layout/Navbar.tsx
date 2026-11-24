@@ -9,7 +9,7 @@ import { useClickOutside } from "@utils/click-outside"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useState } from "react"
 
 const navLinks = siteConfig.nav
 
@@ -172,11 +172,14 @@ export function NavBar(): React.ReactElement {
   const pathname = usePathname()
   const dict = useDict()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [prevPathname, setPrevPathname] = useState(pathname)
 
-  // Close menu on route change.
-  useEffect(() => {
+  // A route change closes the menu; adjusting during render avoids an effect
+  // and a second paint.
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname)
     setMobileOpen(false)
-  }, [pathname])
+  }
 
   // Close menu when clicking anywhere on the page, except inside the dropdown itself.
   useClickOutside(
@@ -185,8 +188,8 @@ export function NavBar(): React.ReactElement {
     () => setMobileOpen(false)
   )
 
-  const toggleMobile = useCallback(() => setMobileOpen((v) => !v), [])
-  const closeMobile = useCallback(() => setMobileOpen(false), [])
+  const toggleMobile = (): void => setMobileOpen((open) => !open)
+  const closeMobile = (): void => setMobileOpen(false)
 
   return (
     <header className="sticky top-3 z-50 mx-3 sm:mx-4 md:mx-6 rounded-lg border border-(--color-border-default) bg-(--color-bg-primary) shadow-(--shadow-xl)">
@@ -214,7 +217,7 @@ export function NavBar(): React.ReactElement {
       {mobileOpen && (
         <nav
           id="mobile-menu-dropdown"
-          className="md:hidden absolute top-[calc(100%+8px)] right-0 min-w-[200px] bg-(--color-bg-secondary) border border-(--color-border-default) rounded-(--radius-cards) shadow-lg z-50"
+          className="md:hidden absolute top-[calc(100%+8px)] right-0 min-w-50 bg-(--color-bg-secondary) border border-(--color-border-default) rounded-(--radius-cards) shadow-lg z-50"
         >
           <div className="flex flex-col p-2 gap-1">
             <NavList

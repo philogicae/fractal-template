@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useEffectEvent } from "react"
 
 /**
  * Dismissal behavior for floating menus (dropdowns, popovers):
@@ -20,22 +20,24 @@ export function useClickOutside(
   elementIds: string | string[],
   onClose: () => void
 ): void {
+  // Effect events keep the listeners subscribed once per open/closed
+  // transition instead of on every render caused by an inline callback/array.
+  const isOutside = useEffectEvent((target: Node): boolean => {
+    const ids = typeof elementIds === "string" ? [elementIds] : elementIds
+    return !ids.some((id) => document.getElementById(id)?.contains(target))
+  })
+
+  const close = useEffectEvent(onClose)
+
   useEffect(() => {
     if (!isOpen) return
 
-    const ids = Array.isArray(elementIds) ? elementIds : [elementIds]
-
-    const isInside = (target: Node): boolean =>
-      ids.some((id) => document.getElementById(id)?.contains(target))
-
-    const handlePointer = (event: MouseEvent | TouchEvent) => {
-      const target = event.target as Node
-      if (isInside(target)) return
-      onClose()
+    const handlePointer = (event: MouseEvent | TouchEvent): void => {
+      if (event.target instanceof Node && isOutside(event.target)) close()
     }
 
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose()
+    const handleKey = (event: KeyboardEvent): void => {
+      if (event.key === "Escape") close()
     }
 
     document.addEventListener("mousedown", handlePointer)
@@ -47,5 +49,5 @@ export function useClickOutside(
       document.removeEventListener("touchstart", handlePointer)
       document.removeEventListener("keydown", handleKey)
     }
-  }, [isOpen, elementIds, onClose])
+  }, [isOpen])
 }
